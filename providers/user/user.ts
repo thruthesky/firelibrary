@@ -1,7 +1,11 @@
-﻿import { INVALID_EMAIL, WEAK_PASSWORD, PASSWORD_TOO_LONG, UNKNOWN, FIREBASE_API_ERROR, USER_NOT_FOUND } from '../etc/error';
+﻿import {
+    INVALID_EMAIL, WEAK_PASSWORD, PASSWORD_TOO_LONG, UNKNOWN, FIREBASE_API_ERROR,
+    USER_NOT_FOUND, USER_IS_NOT_LOGGED_IN
+} from '../etc/error';
 import { Base, _, USER, COLLECTIONS, RESPONSE, USER_CREATE, PERMISSION_DENIED, USER_DATA } from './../etc/base';
 import * as firebase from 'firebase';
 export class User extends Base {
+    private unsubscribeUserProfile;
     constructor() {
         super(COLLECTIONS.USERS);
     }
@@ -49,6 +53,12 @@ export class User extends Base {
      * Returns user data
      */
     data(): Promise<USER_DATA> {
+        /**
+         * Make sure you call this method ** after ** `onAuthStateChanged()`
+         */
+        if (!this.uid) {
+            return this.failure(USER_IS_NOT_LOGGED_IN);
+        }
         const user: USER = {
             email: this.email,
             displayName: this.displayName,
@@ -63,6 +73,22 @@ export class User extends Base {
             }
         })
             .catch(e => this.failure(e));
+    }
+
+
+    /**
+     * Listens on change of user profile data.
+     * @param callback callback
+     */
+    listen(callback: (data: USER) => void) {
+        this.unsubscribeUserProfile = this.collection.doc(this.uid).onSnapshot(doc => {
+            callback(<USER>doc.data());
+        });
+    }
+    unlisten() {
+        if (this.unsubscribeUserProfile) {
+            this.unsubscribeUserProfile();
+        }
     }
 
     /**
@@ -115,10 +141,11 @@ export class User extends Base {
                 return this.updateAuthentication(user, data); // 2. update Authentication(profile) with `dispalyName` and `photoURL`
             })
             .then((user: firebase.User) => {
+                return this.success();
                 // console.log(`Going to set user data under users collection: `);
-                return this.set(user, data); // 3. update other information like birthday, gender on `users` collection.
+                // return this.set(user, data); // 3. update other information like birthday, gender on `users` collection.
             })
-            .then(a => this.success(a))
+            // .then(a => this.success(a))
             .catch(e => {
                 // console.log('Got error on.', data, e);
                 return this.failure(e);
@@ -172,23 +199,33 @@ export class User extends Base {
 
     /**
     * Sets user information on user collection.
+    * @warning what if user auth has not been changed yet?
     */
-    set(user: firebase.User, data: USER): Promise<USER_CREATE> {
-        delete data.displayName;
-        delete data.photoURL;
+    // set(data: USER): Promise<USER_CREATE> {
+    //     console.log('user.set() ', data);
+    //     delete data.displayName;
+    //     delete data.photoURL;
+    //     delete data.password;
+    //     data.created = firebase.firestore.FieldValue.serverTimestamp();
+    //     data.uid = this.uid;
+    //     return this.create(data)
+    //         .then(() => {
+    //             console.log('user data has been set', data);
+    //             return this.success({ uid: data.uid });
+    //         })
+    //         .catch(e => {
+    //             console.log(`Failed to set data under users collection: `);
+    //             return this.failure(e);
+    //         });
+    // }
+    create(data: USER): Promise<USER_CREATE> {
+        // delete data.displayName;
+        // delete data.photoURL;
         delete data.password;
         data.created = firebase.firestore.FieldValue.serverTimestamp();
-        // return this.collection.doc(user.uid).set(data).then(x => user);
         data.uid = this.uid;
-        return this.create(data)
-            .catch(e => {
-                console.log(`Failed to set data under users collection: `);
-                return this.failure(e);
-            });
-    }
-    create(data: USER): Promise<USER_CREATE> {
         const ref = this.collection.doc(data.uid);
-        console.log(`set at: ${ref.path} with: `, data);
+        console.log(`create at: ${ref.path} with: `, data);
         return ref.set(data)
             .then(() => this.success({ id: data.uid }))
             .catch(e => this.failure(e));
@@ -201,7 +238,6 @@ export class User extends Base {
      *      user['photoURL'] is optional.
      */
     update(user: USER): Promise<USER_CREATE> {
-        user.uid = this.uid;
         console.log('user.update(): ', user);
         const up = { displayName: user.displayName };
         if (user.photoURL) {
@@ -210,6 +246,10 @@ export class User extends Base {
         return this.auth.currentUser.updateProfile(_.sanitize(up))
             .then(() => {
                 console.log('user data: ', user);
+                // user.uid = this.uid;
+                // delete user.displayName;
+                // delete user.photoURL;
+                user.updated = firebase.firestore.FieldValue.serverTimestamp();
                 return this.collection.doc(this.uid).update(user);
             })
             .then(() => this.success({ id: user.uid }))

@@ -3,6 +3,7 @@ import {
     Base, _, DATA_UPLOAD
 } from './../etc/base';
 import { User } from '../user/user';
+import { COLLECTION_ROOT, COLLECTION_DOMAIN } from '../../settings';
 export class Data extends Base {
 
 
@@ -36,6 +37,10 @@ export class Data extends Base {
     //     return firebase.storage().ref().child(path);
     // }
 
+    /**
+     * Delete a photo and its thumbnail.
+     * It does not edit any `firestore` docuemnt. For profile photo, you need to update by yourself if you need.
+     */
     delete(data: DATA_UPLOAD): Promise<any> {
         console.log(`Data::delete()`, data);
         return firebase.storage().ref(data.fullPath).delete()
@@ -51,7 +56,7 @@ export class Data extends Base {
                 // const sp = data.fullPath.split('/');
                 // const pop = sp.pop();
                 // const thumbnailPath = sp.join('/') + '/thumb_' + pop;
-                const thumbnailPath = this.getThumbnailPath( data.fullPath );
+                const thumbnailPath = this.getThumbnailPath(data.fullPath);
                 console.log(`going to delete thumbnail: ${thumbnailPath}`);
                 return firebase.storage().ref(thumbnailPath).delete()
                     .catch(e => {
@@ -77,5 +82,19 @@ export class Data extends Base {
         const sp = fullPath.split('/');
         const pop = sp.pop();
         return sp.join('/') + '/thumb_' + pop;
+    }
+
+    /**
+     * Returns `temporary thumbnail path` in firestore.
+     */
+    getThumbnailDocumentPath(): string {
+        // /temp/thumbnails/fire-library/localhost/ZSWWeqFjpPOvnnLbo6mKWJDV6hT2
+        return 'temp/thumbnails/' + COLLECTION_ROOT + '/' + COLLECTION_DOMAIN + '/' + this.user.uid + '/' + 'profile-photo';
+    }
+    /**
+     * Returns `temporary thumbnail path` reference.
+     */
+    get thumbnailDocumentRef(): firebase.firestore.DocumentReference {
+        return this.db.doc( this.getThumbnailDocumentPath() );
     }
 }

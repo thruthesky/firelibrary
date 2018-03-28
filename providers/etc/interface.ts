@@ -156,6 +156,7 @@ export interface DATA_UPLOAD {
     url?: string;
     thumbnailUrl?: string;
     fullPath?: string;
+    created?: any;
 }
 
 
