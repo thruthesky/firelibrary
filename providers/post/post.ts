@@ -1,4 +1,4 @@
-import { NOT_FOUND, NO_DOCUMENT_ID } from './../etc/error';
+import { NOT_FOUND, NO_DOCUMENT_ID, POST_ALREADY_DELETED } from './../etc/error';
 import {
     Base, _,
     COLLECTIONS, POST, PERMISSION_DENIED,
@@ -9,8 +9,8 @@ import {
     POST_ID_NOT_EMPTY,
     POST_DELETE,
     ALREADY_LIKED,
-    POST_DELETED,
-    POST_PAGE_OPTIONS
+    POST_PAGE_OPTIONS,
+    DELETED_MARKER
 } from './../etc/base';
 import { User } from '../user/user';
 import * as firebase from 'firebase';
@@ -149,7 +149,7 @@ export class Post extends Base {
     private editValidator(post: POST): Promise<any> {
         // console.log('VALIDATOR: ', post);
         if (post.deleted) {
-            return this.failure(POST_DELETED);
+            return this.failure(POST_ALREADY_DELETED);
         }
         if (this.user.isLogout) {
             return Promise.reject(new Error(USER_IS_NOT_LOGGED_IN));
@@ -215,8 +215,8 @@ export class Post extends Base {
     */
     delete(id: string): Promise<POST_DELETE> {
         const post: POST = {
-            title: POST_DELETED,
-            content: POST_DELETED,
+            title: DELETED_MARKER,
+            content: DELETED_MARKER,
             deleted: true
         };
         return this.collection.doc(id).update(post)

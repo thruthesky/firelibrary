@@ -1,6 +1,7 @@
 
 export const COLLECTIONS = {
     USERS: 'users',
+    PUSH_NOTIFICATIONS: 'push-notifications',
     SETTINGS: 'settings',
     CATEGORIES: 'categories',
     POSTS: 'posts',
@@ -15,4 +16,5 @@ export const COLLECTIONS = {
 };
 
 
-export const POST_DELETED = 'This post has been deleted!';
+export const DELETED_MARKER = 'This article is deleted!';
+

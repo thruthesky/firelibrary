@@ -35,9 +35,10 @@ export const CATEGORY_DOES_NOT_EXIST = NOT_FOUND;
 
 /// Posts
 export const POST_ID_EMPTY = 'post-id-empty';
-export const POST_ALREADY_DELETED = 'Post is already deleted.';
+export const POST_ALREADY_DELETED = 'post-deleted';
 export const POST_ID_NOT_EMPTY = 'post-id-not-empty';
 export const COMMENT_ID_EMPTY = 'comment-id-empty';
+export const COMMENT_DELETED = 'comment-deleted';
 
 
 export const ALREADY_LIKED = 'already-liked-or-disliked';

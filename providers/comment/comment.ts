@@ -6,8 +6,9 @@ import {
     COMMENT_CREATE,
     COMMENT_EDIT,
     COMMENT_DELETE,
-    POST_DELETED,
-    COMMENT_ID_EMPTY
+    COMMENT_ID_EMPTY,
+    DELETED_MARKER,
+    COMMENT_DELETED
 } from './../etc/base';
 import { User } from '../user/user';
 import * as firebase from 'firebase';
@@ -170,10 +171,10 @@ export class Comment extends Base {
 
     edit(comment: COMMENT): Promise<COMMENT_EDIT> {
         if (comment.deleted) {
-            return this.failure('Comment is already deleted.');
+            return this.failure(COMMENT_DELETED);
         }
         _.sanitize(comment);
-        comment.uid = this.user.uid;
+        // comment.uid = this.user.uid;                 // Does not update uid. Editor may be an admin.
         comment.postId = this.comments[comment.id].postId;
         comment.updated = firebase.firestore.FieldValue.serverTimestamp();
         const ref = this.comment(comment.postId, comment.id);
@@ -183,6 +184,19 @@ export class Comment extends Base {
         })
             .catch(e => this.failure(e));
 
+    }
+
+    delete(id: string): Promise<COMMENT_DELETE> {
+        const comment: COMMENT = {
+            id: id,
+            content: DELETED_MARKER,
+            deleted: true
+        };
+        const postId = this.comments[comment.id].postId;
+        const ref = this.comment( postId, comment.id );
+        return ref.update(comment)
+            .then(() => this.success({id: id}))
+            .catch( e => this.failure(e));
     }
 
     /**
@@ -350,7 +364,7 @@ export class Comment extends Base {
 
     /**
      * Destroys all the resources that were used to display comments of a post.
-     * @desc it should be called from `OnDestroy` of the comment component
+     * @desc it should be called from `OnDestroy` of the (parent) comment component to unsubscribe the listeners.
      *      or anywhere you want to destroy the comments that belong to the post.
      */
     destory(post: POST) {
@@ -358,13 +372,5 @@ export class Comment extends Base {
         this.unsubscribes(post.id);
     }
 
-    delete(id: string): Promise<COMMENT_DELETE> {
-        const comment: COMMENT = {
-            id: id,
-            content: POST_DELETED,
-            deleted: true
-        };
-        return this.edit(comment);
-    }
 }
 

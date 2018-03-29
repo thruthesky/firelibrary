@@ -253,7 +253,7 @@ export class Library {
      *      null if there is error or there is no value.
      *      Or value that were saved.
      */
-    get(key) {
+    static get(key: string): any {
         const value = localStorage.getItem(key);
         if (value !== null) {
             try {
@@ -266,6 +266,8 @@ export class Library {
     }
 
 
+
+
     /**
      * Saves data to localStorage.
      *
@@ -274,9 +276,9 @@ export class Library {
      * @param key key
      * @param data data to save in localStorage
      */
-    set(key, data) {
+    static set(key, data): void {
         // console.log("storage::set()", data);
-        return localStorage.setItem(key, JSON.stringify(data));
+        localStorage.setItem(key, JSON.stringify(data));
     }
 
 }
