@@ -199,25 +199,15 @@ export class User extends Base {
 
     /**
     * Sets user information on user collection.
-    * @warning what if user auth has not been changed yet?
+    *
+    * Creating user's profile data under `/fire-library/{domain}/users/{uid}`.
+    * The user need to authenticate first before invoking this method. Or error will happens since the user has no `uid`.
+    *
+    * @desc what if user is not authenticated or `onAuthStateChanged()` not happened?
+    *   The user may be registered just now, but firebase's `onAuthStateChanged()` has not happend yet.
+    *   This means, user.uid will be null. and it will create an error.
+    *   And this really happens.
     */
-    // set(data: USER): Promise<USER_CREATE> {
-    //     console.log('user.set() ', data);
-    //     delete data.displayName;
-    //     delete data.photoURL;
-    //     delete data.password;
-    //     data.created = firebase.firestore.FieldValue.serverTimestamp();
-    //     data.uid = this.uid;
-    //     return this.create(data)
-    //         .then(() => {
-    //             console.log('user data has been set', data);
-    //             return this.success({ uid: data.uid });
-    //         })
-    //         .catch(e => {
-    //             console.log(`Failed to set data under users collection: `);
-    //             return this.failure(e);
-    //         });
-    // }
     create(data: USER): Promise<USER_CREATE> {
         // delete data.displayName;
         // delete data.photoURL;
@@ -230,6 +220,7 @@ export class User extends Base {
             .then(() => this.success({ id: data.uid }))
             .catch(e => this.failure(e));
     }
+
 
     /**
      * Updates user informaton.
