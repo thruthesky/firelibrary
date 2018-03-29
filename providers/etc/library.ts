@@ -242,6 +242,43 @@ export class Library {
     }
 
 
+
+
+    /**
+     * Gets data from localStroage and returns after JSON.parse()
+     * .set() automatically JSON.stringify()
+     * .get() automatically JSON.parse()
+     *
+     * @return
+     *      null if there is error or there is no value.
+     *      Or value that were saved.
+     */
+    get(key) {
+        const value = localStorage.getItem(key);
+        if (value !== null) {
+            try {
+                return JSON.parse(value);
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * Saves data to localStorage.
+     *
+     * It does `JSON.stringify()` before saving, so you don't need to do it by yourself.
+     *
+     * @param key key
+     * @param data data to save in localStorage
+     */
+    set(key, data) {
+        // console.log("storage::set()", data);
+        return localStorage.setItem(key, JSON.stringify(data));
+    }
+
 }
 
 
