@@ -211,9 +211,13 @@ export class User extends Base {
     create(data: USER): Promise<USER_CREATE> {
         // delete data.displayName;
         // delete data.photoURL;
+
+        if ( ! this.uid ) {
+            return this.failure( USER_IS_NOT_LOGGED_IN );
+        }
+        data.uid = this.uid;
         delete data.password;
         data.created = firebase.firestore.FieldValue.serverTimestamp();
-        data.uid = this.uid;
         const ref = this.collection.doc(data.uid);
         console.log(`create at: ${ref.path} with: `, data);
         return ref.set(data)

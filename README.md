@@ -1,5 +1,13 @@
-# firelibrary
-Firebase CMS Library
+# Firebase CMS Library
+
+* It is a library to build CMS with `Firebase`.
+ * It uses firebase Authentication, Firestore database, Storage, etc.
+
+* This library is developped as a module for Angular and Ionic.
+  If you want to use it other framework, you will need to edit since other framework is different from Angular which has Module system and Dependency Injection, etc.
+
+
+
 
 
 # Installation
@@ -24,21 +32,15 @@ $ git submodule add https://github.com/thruthesky/firelibrary src/app/modules/fi
 
 # Push Notification
 
-* It only saves `token` and send push notification through `functions`.
-  This means, you need to get `token` by yourself.
-  For app, you just get `token`.
-  For web/pwa, users will be asked to accept or reject.
-
-* One user with many devices can have many tokens.
-
-`/fire-library/{domain}/push-notifications/{uid}/{ token: time }`
+* There is `Push` class in `push.ts` and stopped working because we believe capacitor will provide a different way of push notification than `Firebase messaging`.
 
 
 * Strategies for getting `token`.
- * Show a button with nice explanation why you need to enable/accept push notification.
- * User click the button and request for accepting. Firebase message will show a consent box.
- * It saves `push.token`, `push.token_issued_at`, `push.token_rejected_at` in local storage.
-  * If the user rejected `push notification`, you can show the button again.
-    Once the button is clicked then, it will change the domain by adding or remving `www` on the domain. or adding dot(.) at the end.
-  * If the app cache/localStorage is cleared, then it should ask again to accept the push notification consent.
+ * Once a user rejects the consent box of permissing push notifiation, there is no way to show the consent box again.
+  Unless you change the domain.
+  You can change domain by adding/removing `www` in front of the domain or `.` at the end of domain.
+ * One user with many devices can have many tokens
+   So, you need to save tokens as an array of user document.
+   `/fire-library/{domain}/push-notifications/{uid}/Array<{ token-id: time }>`
 
+ * Show a button with nice explanation why you need to enable/accept push notification.

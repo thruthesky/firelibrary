@@ -4,7 +4,7 @@ import {
 } from './../etc/base';
 import { User } from '../user/user';
 
-const KEY_PUSH = 'push';
+
 export class Push extends Base {
 
     private messaging = firebase.messaging();
@@ -18,10 +18,6 @@ export class Push extends Base {
 
     }
 
-
-    isPermissionGranted() {
-        return _.get( KEY_PUSH );
-    }
 
 
 
