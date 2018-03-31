@@ -5,8 +5,15 @@
  */
 
 
-let domain;
-domain = 'localhost';
+let domain: string;
+if (window.location && window.location.hostname) {
+    domain = window.location.hostname;
+} else {
+    domain = 'localhost';
+}
+domain = domain.replace('www', '');
+
+
 
 /**
  * Examples of domain.
