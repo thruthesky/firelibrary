@@ -169,15 +169,22 @@ export class Comment extends Base {
             });
     }
 
-    edit(comment: COMMENT): Promise<COMMENT_EDIT> {
-        if (comment.deleted) {
-            return this.failure(COMMENT_DELETED);
-        }
+
+    private editSanitizer(comment: COMMENT) {
         _.sanitize(comment);
         // comment.uid = this.user.uid;                 // Does not update uid. Editor may be an admin.
         comment.postId = this.comments[comment.id].postId;
         comment.updated = firebase.firestore.FieldValue.serverTimestamp();
-        const ref = this.comment(comment.postId, comment.id);
+        delete comment.id; // documnet id must not saved.
+        return comment;
+    }
+    edit(comment: COMMENT): Promise<COMMENT_EDIT> {
+        if (comment.deleted) {
+            return this.failure(COMMENT_DELETED);
+        }
+        const commentId = comment.id;
+        this.editSanitizer(comment);
+        const ref = this.comment(comment.postId, commentId);
         console.log(`Going to edit : ${ref.path} with `, comment);
         return ref.update(comment).then(() => {
             return this.success({ id: comment.id });
