@@ -137,6 +137,11 @@ Copy the source code of [regitration page on sample](https://github.com/thruthes
 
 
 
+## Reminders on Installation
+
+* If you use subdomain or different domain in one `FireLibrary` installation, you will need to register and install on each domain(subdomain).
+
+
 
 # FireLibrary Domain
 

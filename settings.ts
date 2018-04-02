@@ -5,18 +5,21 @@
  */
 
 
+ /**
+  * Get domain from web browser.
+  */
 let domain: string;
 if (window.location && window.location.hostname) {
     domain = window.location.hostname;
 } else {
     domain = 'localhost';
 }
-domain = domain.replace('www', '');
+domain = domain.replace('www.', '');
 
 
 
 /**
- * Examples of domain.
+ * Examples of domain names by computer OS.
  */
 /*
 if (navigator.userAgent.indexOf('Win') !== -1) {

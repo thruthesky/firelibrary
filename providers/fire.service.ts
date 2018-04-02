@@ -8,6 +8,7 @@ import { Post } from './post/post';
 import { Data } from './data/data';
 import { Comment } from './comment/comment';
 import { Push } from './push/push';
+import { COLLECTION_DOMAIN } from '../settings';
 
 
 @Injectable()
@@ -49,5 +50,11 @@ export class FireService extends Base {
   }
 
 
+  /**
+   * Display current domain in `firestore` database.
+   */
+  getDomain() {
+    return COLLECTION_DOMAIN;
+  }
 }
 
