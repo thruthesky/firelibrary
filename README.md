@@ -7,12 +7,118 @@
   If you want to use it other framework, you will need to edit since other framework is different from Angular which has Module system and Dependency Injection, etc.
 
 
-## Terms
+# TODO
+
+* Make a forum with chatting functionality. @see Goal
+
+* counting likes/dislikes
+ * Client does not need to get all the documents since it has backend option.
+   so, simple add/deduct 1.
+ * Functions does not need to get all the documents since it is safe.
+   For functions, security rule for like/dislike must be changed.
+* push notifications.
+
+* @bug realtime update is not working when there is no post. it works only after there is a post.
+* @bug small. when edit, it appears as edited at first and disappears quickly when it is not the user's post. It may be the problem of `local write` in firestore.
+
+
+* delete uploaded files when post/comment is deleted.
+* delete thumbnails.
+
+* Admin dashboard.
+ * installation page.
+  * If /settings/admin does not exist, you can install(put your email as admin).
+
+* check post's uid on creation. a user may put another user's uid on post and that can cause a problem
+
+* file upload
+ * if a file uploaded successfully,
+    the file's metadata will have `success: true`.
+    Without it, the file is not uploaded. The user may stop posting after uploading.
+ * all files without `success: true` must be deleted some time laster.
+
+
+* Functions options
+ * git repo: https://github.com/thruthesky/firelibrary-functions
+ * @see functions code https://github.com/firebase/functions-samples
+ * Counting comment, likes/dislikes, counting numberOfPosts, numberOfComments.
+ * Push notificaton.
+  * User can have options. push on reply.
+
+
+* Unit test
+ * @done (Not much to do) Produce all the errors of https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreError
+
+   *  emtpy category id
+   *  wrong category id: with slash, space, dot, other specail chars.
+   *  too long category id
+   *  too short category id
+   *  category id with existing
+   *  category id with
+   *  empty category data
+   *  too big category data. over 1M. ( this is not easy to test. )
+ * Unit test on creating category with admin permission.
+* user update with email/password login.
+* Authentication social login and profile update.
+* resign.
+* User profile photo update.
+ * Check if `photoURL` is erased every login. then `photoURL` should be saved in `users` collection.
+* Update rules
+
+* Create posts under `posts` collection.
+ * Anonymous can post with `Firebase Authentication Anonymous Login`
+
+* Rule update
+ * Check query data to meet condition.
+  * When a user create a post, categoryId must exist in categories collection.
+
+* Storage rules. Limit file size upto 32M.
+
+
+* Cleaning tool for deleted posts.
+
+
+# Terms
 
 * `We` means the core developers.
 * `You` means the ones who are using this `FireLibrary`.
 * `Action Methods` are defined in providers and are handling/manipulating with `Firebase`.
  * Some of `Action Methods` are `Category::create()`, `Category::edit()`, etc.
+
+
+
+
+# Goal
+
+## Chat Forum
+
+* To make a forum with chatting functionality.
+ * Person A post a question.
+ * Person B answers.
+ * 'A' gets push notification and view the answer and replies immedately.
+ * Realtime chat begins between 'A' and 'B' on the post
+  * and the comments will be open to public since it is merely a comments.
+
+
+### Conditions.
+
+* The category must have `enableLiveChat` property to true.
+* if `enableLiveChat` is set to true,
+ * then, the app must get title, 255 chars of content, meta data(extra info like author, like/dislike, dates etc ),
+  255 chars of last comment(chat).
+ * And display as a post list.
+ * The post list should be realtime updated.
+* When a post is clicked,
+ * A chat room will be opened.
+ * And users who are viewing the post are actually chatting in a chatting room.
+ * All the chat must be saved as the comment of the post.
+ * Users who have chatted in that post(chat room), will automatically have subscription and get notification immediately when other user chats.
+   They have unsubscribe options.
+ * Other users ( who are not chatting ) can subscribe/unsubscribe that post for updating new chat. and get immediate notifications. ( delaying push notificatio delivery is not an easy work. no good for function and cron. )
+ 
+* When a open is 24 hours old, then the design of the post become a normal post view unless the author set it `statusLiveChat` to `continue`
+* When the author of post set `statusLiveChat` to `close`, then the design becomes a normal post until `statusLiveChat` become `continue`.
+
 
 
 
@@ -340,83 +446,7 @@ service firebase.storage {
 
 
 
-# TODO
-
-* Make a forum with chatting functionality.
- * Person A post a question.
- * Person B answers.
- * A gets push notification and view the answer and replies immedately.
- * Realtime chat begins on the post
-  * and the comments will be open to public since it is merely a comments.
-
-* counting likes/dislikes
- * Client does not need to get all the documents since it has backend option.
-   so, simple add/deduct 1.
- * Functions does not need to get all the documents since it is safe.
-   For functions, security rule for like/dislike must be changed.
-* push notifications.
-
-* @bug realtime update is not working when there is no post. it works only after there is a post.
-* @bug small. when edit, it appears as edited at first and disappears quickly when it is not the user's post. It may be the problem of `local write` in firestore.
-
-
-* delete uploaded files when post/comment is deleted.
-* delete thumbnails.
-
-* Admin dashboard.
- * installation page.
-  * If /settings/admin does not exist, you can install(put your email as admin).
-
-* check post's uid on creation. a user may put another user's uid on post and that can cause a problem
-
-* file upload
- * if a file uploaded successfully,
-    the file's metadata will have `success: true`.
-    Without it, the file is not uploaded. The user may stop posting after uploading.
- * all files without `success: true` must be deleted some time laster.
-
-
-* Functions options
- * git repo: https://github.com/thruthesky/firelibrary-functions
- * @see functions code https://github.com/firebase/functions-samples
- * Counting comment, likes/dislikes, counting numberOfPosts, numberOfComments.
- * Push notificaton.
-  * User can have options. push on reply.
-
-
-* Unit test
- * @done (Not much to do) Produce all the errors of https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreError
-
-   *  emtpy category id
-   *  wrong category id: with slash, space, dot, other specail chars.
-   *  too long category id
-   *  too short category id
-   *  category id with existing
-   *  category id with
-   *  empty category data
-   *  too big category data. over 1M. ( this is not easy to test. )
- * Unit test on creating category with admin permission.
-* user update with email/password login.
-* Authentication social login and profile update.
-* resign.
-* User profile photo update.
- * Check if `photoURL` is erased every login. then `photoURL` should be saved in `users` collection.
-* Update rules
-
-* Create posts under `posts` collection.
- * Anonymous can post with `Firebase Authentication Anonymous Login`
-
-* Rule update
- * Check query data to meet condition.
-  * When a user create a post, categoryId must exist in categories collection.
-
-* Storage rules. Limit file size upto 32M.
-
-
-* Cleaning tool for deleted posts.
-
-
-## Documents
+# Documents
 
 * We use compodoc to generator documents based on Javascript comments.
 * Github - https://github.com/thruthesky/firelibrary
