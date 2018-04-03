@@ -61,16 +61,45 @@ export class Base {
     // static ngZone;
 
     ///
-    auth: firebase.auth.Auth = null;
-    db: firebase.firestore.Firestore = null;
-    storage: firebase.storage.Storage = null;
+    // auth: firebase.auth.Auth = null;
+    // db: firebase.firestore.Firestore = null;
+    // storage: firebase.storage.Storage = null;
     constructor(public collectionName = '') {
 
-        this.auth = Base.firebase.auth();
-        this.db = Base.firebase.firestore();
-        this.storage = Base.firebase.storage();
+        // this.auth = Base.firebase.auth();
+        // this.db = Base.firebase.firestore();
+        // this.storage = Base.firebase.storage();
 
     }
+
+    /**
+     * return firebase.auth.Auth object.
+     * @description Base.configure() must be called first before calling this method.
+     */
+    get auth(): firebase.auth.Auth {
+        return Base.firebase.auth();
+    }
+
+    /**
+     * return firebase.auth.Auth object.
+     * @description Base.configure() must be called first before calling this method.
+     */
+    get db(): firebase.firestore.Firestore {
+        return Base.firebase.firestore();
+    }
+
+    /**
+     * return firebase.auth.Auth object.
+     * @description Base.configure() must be called first before calling this method.
+     */
+    get storage(): firebase.storage.Storage {
+        return Base.firebase.storage();
+    }
+
+    /**
+     * Must be invoked one time before any use of `Base` class.
+     * @param config System Config
+     */
     static configure(config: SYSTEM_CONFIG) {
         Base.firebase = config.firebaseApp;
         Base.settings.functions = config.functions;
@@ -453,7 +482,7 @@ export class Base {
         /**
          * If `functions` options is set to true, then counting will be done in cloud functions.
          */
-        if ( this.settings.functions ) {
+        if (this.settings.functions) {
             return Promise.resolve();
         }
         console.log(`countLikes() on ${collectionRef.path}`);
