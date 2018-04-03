@@ -8,7 +8,8 @@ import {
     COMMENT_DELETE,
     COMMENT_ID_EMPTY,
     DELETED_MARKER,
-    COMMENT_DELETED
+    COMMENT_DELETED,
+    NOT_FOUND
 } from './../etc/base';
 import { User } from '../user/user';
 import * as firebase from 'firebase';
@@ -16,7 +17,15 @@ export class Comment extends Base {
 
     private user: User;
 
+    /**
+     * This object holds comment document objects.
+     * The key is comment id.
+     */
     comments: { [commentId: string]: COMMENT } = {};
+    /**
+     * This object holds comments' IDs of each post.
+     * The key is post document ID.
+     */
     commentIds: { [postId: string]: Array<string> } = {};
 
 
@@ -60,7 +69,9 @@ export class Comment extends Base {
     }
 
     /**
-     * Returns the comment.
+     * Returns the comment from loaded comment array.
+     * @param commentId comment document id.
+     * @returns a comment document object.
      */
     getComment(commentId): COMMENT {
         if (this.comments[commentId] === void 0) {
@@ -87,6 +98,8 @@ export class Comment extends Base {
 
     /**
      * Loads all the comments under the postId.
+     * @param postId post document id
+     * @returns an Array of comment IDs of the post.
      */
     load(postId: string): Promise<Array<string>> {
         const ref = this.commentCollection(postId);
@@ -100,7 +113,6 @@ export class Comment extends Base {
                 const sorted = this.sortComments(postId, c);
                 this.subscribeCommentChange(postId, c);
                 this.subscribeLikes(c);
-
             });
             // console.log('sorted: ', sorted);
             // observe like/dislike
@@ -110,6 +122,34 @@ export class Comment extends Base {
         }).catch(e => this.failure(e));
     }
 
+
+
+    /**
+     * Gets a comment from forestore.
+     * @description It does not change the comments array loaded by `load()`.
+     *  Meaning it will not reflect the template page.
+     */
+    get(postId: string, commentId?: string): Promise<COMMENT> {
+        const commentRef = this.comment(postId, commentId);
+        return commentRef.get()
+            .then(doc => {
+                if (doc.exists) {
+                    return this.success(doc.data());
+                } else {
+                    return this.failure(new Error(NOT_FOUND));
+                }
+            })
+            .catch(e => this.failure(e));
+    }
+    /**
+     * Gets comments of a post from firestore.
+     *
+     * @description It does not change the comments array loaded by `load()`.
+     *  Meaning it will not reflect the template page.
+     */
+    gets() {
+
+    }
 
 
 
@@ -142,7 +182,7 @@ export class Comment extends Base {
      *      comment[postId] and comment[parentId] is already set.
      */
     create(comment: COMMENT): Promise<COMMENT_CREATE> {
-        if ( ! comment.id ) {
+        if (!comment.id) {
             return this.failure(COMMENT_ID_EMPTY);
         }
         _.sanitize(comment);
@@ -187,7 +227,7 @@ export class Comment extends Base {
         const ref = this.comment(comment.postId, commentId);
         console.log(`Going to edit : ${ref.path} with `, comment);
         return ref.update(comment).then(() => {
-            return this.success({ id: comment.id });
+            return this.success({ id: commentId });
         })
             .catch(e => this.failure(e));
 
@@ -200,10 +240,10 @@ export class Comment extends Base {
             deleted: true
         };
         const postId = this.comments[comment.id].postId;
-        const ref = this.comment( postId, comment.id );
+        const ref = this.comment(postId, comment.id);
         return ref.update(comment)
-            .then(() => this.success({id: id}))
-            .catch( e => this.failure(e));
+            .then(() => this.success({ id: id }))
+            .catch(e => this.failure(e));
     }
 
     /**
