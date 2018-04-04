@@ -503,21 +503,28 @@ service firebase.storage {
 
 ## Language Translation
 
-* By default, the language is set to English(`en`) and the text is saved in Typescript while other language texts are saved separately in JSON file.
+* By default, the language is set to English(`en`) and the text is saved in `firelibrary/etc/languages/en.ts` while other language texts are saved separately in JSON format file.
 
-* `en` language is saved in `firelibrary/etc/languages/en.ts` and is loaded in memory by default.
- * So, any language code that is not exist in other language will use `en` language as fallback.
- * All other language text is saved in `assets/lang` folder by default like `assets/lang/ko.json`, `assets/lang/cn.json`.
+* `en` language file is imported by default and available.
+ * So, any language or language code that is not exist in other language file will use the same code in `en` language as fallback.
+ * All other language text is loaded from `assets/lang` folder by default like `assets/lang/ko.json`, `assets/lang/cn.json`.
  * JOSN language files are loaded dynamically through `http.get`. So it does not affects the booting speed.
 
 * **@warning** The key of the language JSON file is case sensitive. So, becareful on the case.
 
 
-* It needs sometime for the JSON language files to be loaded since they are loaded by `http.get()`.
- * If you are going to use the language file immediately before loading the language file, English text will be used.
+* It needs sometime for the JSON language files to be loaded since they are loaded asynchronously by `http.get()`.
+ * If you are going to use the language file immediately before loading the language file, English language may be used in stead.
 
 * If error code should be defined in language file so it can be translated to end user.
  * if there is any error that is not translated, you will see a message like `"Error code - not-found - is not translated. Please translate it. It may be firebase error."`.
+
+* You can add information on translated message. @see `Base::translate()`
+
+* The default English language file has minimal code to translate. You would probably want to add more. @see `test.component::language()` to know how to add more language(code/text) dynamically.
+
+* You can load a language file dynamically outsite from the app by giving URL. @see `test.component::language()` to know more about it.
+
 
 
 ## Validators

@@ -42,12 +42,15 @@ export class Base {
     static http: HttpClient = null;
 
     /**
-    *
-    * Languages
-    * You can change user language with setLanguage()
-    */
+     *
+     * Languages
+     * You can change user language with setLanguage()
+     */
     static language = 'en';
     static languageFolder = 'assets/lang'; // It can be changed by settings ` Base.languageFolder = '.../...'; `
+    /**
+     * Sets English `en` language to `Base.texts` here.
+     */
     static texts: { [language: string]: any } = { en: en };
 
 
@@ -274,26 +277,48 @@ export class Base {
         e['message'] = this.translate(e.code, info);
     }
 
+    /**
+     * Returns translated text string.
+     * @param code code to translate
+     * @param info information to add on the translated text
+     */
     translate(code: any, info?): string {
         return _.patchMarker(this.getText(code), info);
     }
     /**
-    * Returns the text of the code.
-    * @desc If the language is not `en`, then it gets the text of the language.
-    *
-    * @returns text of that code.
-    *      - if the code does not exist on text file, then it returns the code itself.
-    */
+     * Alias of translate()
+     * @param code same as translate()
+     * @param info same as transate()
+     */
+    t(code: any, info?: any): string {
+        return this.translate(code, info);
+    }
+
+    /**
+     * Returns the text of the code.
+     *
+     * It does not translates. Meaning it does not add `information` to the result text. It simply returns.
+     * If the language is not `en`, then it gets the text of the language.
+     *
+     * @returns text of that code.
+     *      - if the code does not exist on text file, then it returns the code itself.
+     */
     getText(code: any): string {
         const ln = this.getLanguage();
+        /**
+         * `text` should hold the text of the language code.
+         */
         let text = null;
-        // console.log('getText: ', ln, Base.texts);
         if (this.getLanguage() !== 'en') { // if not English,
             if (Base.texts[ln] !== void 0 && Base.texts[ln][code] !== void 0) { // check if the text of the language exists
                 text = Base.texts[ln][code];
             }
         }
-        if (!text) { // if it's not English or the text of that language not found,
+        /**
+         * If `text` has not any value, then the language( language file ) has no text for that code.
+         * So, it is going to get text from English langauge file by default.
+         */
+        if (!text) { // if current language is `English` or the text of that language not found,
             if (Base.texts['en'][code] !== void 0) { // get the text of the code in English
                 text = Base.texts['en'][code];
             }
@@ -304,24 +329,46 @@ export class Base {
         return text;
     }
 
+    /**
+     * Adds a code/text into a language that is currently chosen.
+     * @param code code to add into the language
+     * @param text text of the code
+     */
+    addText(code: string, text: string) {
+        const ln = this.getLanguage();
+        Base.texts[ln][code] = text;
+    }
+
+    /**
+     * Gets the current language that is set for language translation.
+     * @see ## Language Translation
+     */
     getLanguage(): string {
         return Base.language;
     }
+
     /**
-    * Sets a language and loads the language file.
-    * This will load JSON language file under `assets/lang` by default. You can change the path.
-    * @desc If the input `ln` is 'en', then it will just return since `en` language is loaded by typescript by default.
-    * @desc If the language is already loaded, it does not load again.
-    *
-    * @returns a Promise<any> on success. Otherwise error will be thrown.
-    * @see README## Langulage Translation
-    *
-    * @code
-    *          fire.setLanguage('cn')
-    .catch( e => alert('Failed to load language file. ' + e.message) );
-    *
-    */
-    setLanguage(ln: string): Promise<any> {
+     *
+     * Sets a language and loads the language file.
+     *
+     * This will load JSON language file under `assets/lang` by default. You can change the path.
+     * @desc If the input `ln` is 'en', then it will just return since `en` language is loaded by typescript by default.
+     * @desc If the language is already loaded, it does not load again.
+     *
+     * @param url URL to load langauge.
+     *
+     * @returns
+     *      a Promise of the langauge object on success.
+     *      Otherwise error will be thrown.
+     *
+     * @see README## Langulage Translation
+     *
+     * @code
+     *          fire.setLanguage('cn')
+                    .catch( e => alert('Failed to load language file. ' + e.message) );
+     *
+     */
+    setLanguage(ln: string, url?: string): Promise<any> {
         Base.language = ln;
         if (ln === 'en') {
             return Promise.resolve();
@@ -329,7 +376,10 @@ export class Base {
         if (Base.texts[ln]) {
             return Promise.resolve();
         }
-        return this.http.get(`/${Base.languageFolder}/${ln}.json`).toPromise()
+        if (!url) {
+            url = `/${Base.languageFolder}/${ln}.json`;
+        }
+        return this.http.get(url).toPromise()
             .then(re => Base.texts[ln] = re);
     }
 
