@@ -1,4 +1,5 @@
 import * as firebase from 'firebase';
+import { InjectionToken } from '@angular/core';
 
 export interface FIRESERVICE_SETTINGS {
     /**
@@ -61,10 +62,11 @@ export interface CATEGORY {
 
 
 export interface SYSTEM_CONFIG {
-    firebaseApp: firebase.app.App;
+    firebaseApp?: firebase.app.App; /// @since 2018.04.04 Optional. since firebase.app() cannot be called on module while AoT compiling.
     functions: boolean;
 }
 
+export const SystemConfig = new InjectionToken<SYSTEM_CONFIG>('firelibrary.config');
 
 
 export interface RESPONSE {
