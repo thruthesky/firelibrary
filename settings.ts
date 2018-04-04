@@ -48,4 +48,4 @@ export const COLLECTION_ROOT = 'fire-library';
  */
 // export const COLLECTION_DOMAIN = 'localhost';
 
-export const COLLECTION_DOMAIN = domain;
+export const COLLECTION_DOMAIN = 'live-forum';

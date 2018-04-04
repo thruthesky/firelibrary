@@ -9,6 +9,10 @@ export class User extends Base {
     constructor() {
         super(COLLECTIONS.USERS);
     }
+
+    /**
+     * `true` if a user is logged in. Otherwise `false`
+     */
     get isLogin(): boolean {
         if (this.auth.currentUser) {
             return true;
