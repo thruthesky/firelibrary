@@ -622,8 +622,11 @@ And with that admin account, you can do admin things.
   then you may need to install.
   You will only need to set `/settings/installed`. If you are going to set admin email when it is already exists, you get permission error on installation.
 
-# File Upload & Thumbnail.
+## File Upload & Thumbnail.
 
+* Users need to sign in first before going to upload a photo since user `uid` is required to upload a photo.
+* If you are going to let users to upload profile photo on registration page, you will need to get email/password first and register first. and then let the user to upload profile photo with the `uid`.
+ * It is like, Step 1. input email/password/name. Step 2. Upload photo.
 
 * Uploaded files are saved on storage.
  * for files - `fire-library/{domain}/{user-uid}/{post-document-id}/{files}`.
