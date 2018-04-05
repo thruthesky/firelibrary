@@ -624,9 +624,7 @@ And with that admin account, you can do admin things.
 
 ## File Upload & Thumbnail.
 
-* Users need to sign in first before going to upload a photo since user `uid` is required to upload a photo.
-* If you are going to let users to upload profile photo on registration page, you will need to get email/password first and register first. and then let the user to upload profile photo with the `uid`.
- * It is like, Step 1. input email/password/name. Step 2. Upload photo.
+* @see ## Registration Page for profile photo upload
 
 * Uploaded files are saved on storage.
  * for files - `fire-library/{domain}/{user-uid}/{post-document-id}/{files}`.
@@ -636,3 +634,14 @@ And with that admin account, you can do admin things.
  * for files - `temp/storage/thumbnails/fire-library/{domain}/{user-uid}/{post-document-id}/{file}/{created: time}`
  * for comments - `temp/storage/thumbnails/fire-library/{domain}/{user-uid}/{post-document-id}/comments/{comment-document-id}/{file}/{created: time}`.
 
+
+## Registration Page
+
+
+* Users need to sign in first before going to upload a photo since user `uid` is required to upload a photo.
+* If you are going to let users to upload profile photo on registration page,
+ you will need to get email/password first and register into `firebase user authentication`.
+ And then let the user to upload profile photo with the `firebase uid`.
+ * It is like you have steps on registration.
+  Step 1. input email/password/name.
+  Step 2. Upload photo.
