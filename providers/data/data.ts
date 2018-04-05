@@ -88,13 +88,30 @@ export class Data extends Base {
      * Returns `temporary thumbnail path` in firestore.
      */
     getThumbnailDocumentPath(): string {
-        // /temp/thumbnails/fire-library/localhost/ZSWWeqFjpPOvnnLbo6mKWJDV6hT2
-        return 'temp/thumbnails/' + COLLECTION_ROOT + '/' + COLLECTION_DOMAIN + '/' + this.user.uid + '/' + 'profile-photo';
+        // fire-library/localhost/ZSWWeqFjpPOvnnLbo6mKWJDV6hT2
+        return COLLECTION_ROOT + '/' + COLLECTION_DOMAIN + '/' + this.user.uid + '/' + 'profile-photo';
     }
+    // /temp/thumbnails/fire-library/localhost/ZSWWeqFjpPOvnnLbo6mKWJDV6hT2
+    // getThumbnailDocumentPath(): string {
+    //     // /temp/thumbnails/fire-library/localhost/ZSWWeqFjpPOvnnLbo6mKWJDV6hT2
+    //     return 'temp/thumbnails/' + COLLECTION_ROOT + '/' + COLLECTION_DOMAIN + '/' + this.user.uid + '/' + 'profile-photo';
+    // }
     /**
      * Returns `temporary thumbnail path` reference.
      */
     get thumbnailDocumentRef(): firebase.firestore.DocumentReference {
         return this.db.doc( this.getThumbnailDocumentPath() );
+    }
+
+    /**
+     * Gets thumbnailUrl based on storage reference
+     *
+     * Warning - This method returns promise.
+     *
+     * @param fullPath - Reference path for thumbnail
+     * @returns {Promise} thumbnailUrl based on storage reference;
+     */
+    getThumbnailUrl(fullPath: string): Promise<any> {
+        return firebase.storage().ref(this.getThumbnailPath(fullPath)).getDownloadURL();
     }
 }
