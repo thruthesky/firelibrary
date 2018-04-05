@@ -503,21 +503,28 @@ service firebase.storage {
 
 ## Language Translation
 
-* By default, the language is set to English(`en`) and the text is saved in Typescript while other language texts are saved separately in JSON file.
+* By default, the language is set to English(`en`) and the text is saved in `firelibrary/etc/languages/en.ts` while other language texts are saved separately in JSON format file.
 
-* `en` language is saved in `firelibrary/etc/languages/en.ts` and is loaded in memory by default.
- * So, any language code that is not exist in other language will use `en` language as fallback.
- * All other language text is saved in `assets/lang` folder by default like `assets/lang/ko.json`, `assets/lang/cn.json`.
+* `en` language file is imported by default and available.
+ * So, any language or language code that is not exist in other language file will use the same code in `en` language as fallback.
+ * All other language text is loaded from `assets/lang` folder by default like `assets/lang/ko.json`, `assets/lang/cn.json`.
  * JOSN language files are loaded dynamically through `http.get`. So it does not affects the booting speed.
 
 * **@warning** The key of the language JSON file is case sensitive. So, becareful on the case.
 
 
-* It needs sometime for the JSON language files to be loaded since they are loaded by `http.get()`.
- * If you are going to use the language file immediately before loading the language file, English text will be used.
+* It needs sometime for the JSON language files to be loaded since they are loaded asynchronously by `http.get()`.
+ * If you are going to use the language file immediately before loading the language file, English language may be used in stead.
 
 * If error code should be defined in language file so it can be translated to end user.
  * if there is any error that is not translated, you will see a message like `"Error code - not-found - is not translated. Please translate it. It may be firebase error."`.
+
+* You can add information on translated message. @see `Base::translate()`
+
+* The default English language file has minimal code to translate. You would probably want to add more. @see `test.component::language()` to know how to add more language(code/text) dynamically.
+
+* You can load a language file dynamically outsite from the app by giving URL. @see `test.component::language()` to know more about it.
+
 
 
 ## Validators
@@ -615,8 +622,9 @@ And with that admin account, you can do admin things.
   then you may need to install.
   You will only need to set `/settings/installed`. If you are going to set admin email when it is already exists, you get permission error on installation.
 
-# File Upload & Thumbnail.
+## File Upload & Thumbnail.
 
+* @see ## Registration Page for profile photo upload
 
 * Uploaded files are saved on storage.
  * for files - `fire-library/{domain}/{user-uid}/{post-document-id}/{files}`.
@@ -626,3 +634,14 @@ And with that admin account, you can do admin things.
  * for files - `temp/storage/thumbnails/fire-library/{domain}/{user-uid}/{post-document-id}/{file}/{created: time}`
  * for comments - `temp/storage/thumbnails/fire-library/{domain}/{user-uid}/{post-document-id}/comments/{comment-document-id}/{file}/{created: time}`.
 
+
+## Registration Page
+
+
+* Users need to sign in first before going to upload a photo since user `uid` is required to upload a photo.
+* If you are going to let users to upload profile photo on registration page,
+ you will need to get email/password first and register into `firebase user authentication`.
+ And then let the user to upload profile photo with the `firebase uid`.
+ * It is like you have steps on registration.
+  Step 1. input email/password/name.
+  Step 2. Upload photo.
