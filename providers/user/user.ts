@@ -85,6 +85,9 @@ export class User extends Base {
      * @param callback callback
      */
     listen(callback: (data: USER) => void) {
+        if (!this.uid) {
+            return this.failure(USER_IS_NOT_LOGGED_IN);
+        }
         this.unsubscribeUserProfile = this.collection.doc(this.uid).onSnapshot(doc => {
             callback(<USER>doc.data());
         });
@@ -145,7 +148,7 @@ export class User extends Base {
                 return this.updateAuthentication(user, data); // 2. update Authentication(profile) with `dispalyName` and `photoURL`
             })
             .then((user: firebase.User) => {
-                return this.success();
+                return this.success(user.uid);
                 // console.log(`Going to set user data under users collection: `);
                 // return this.set(user, data); // 3. update other information like birthday, gender on `users` collection.
             })
@@ -251,7 +254,7 @@ export class User extends Base {
                 user.updated = firebase.firestore.FieldValue.serverTimestamp();
                 return this.collection.doc(this.uid).update(user);
             })
-            .then(() => this.success({ id: user.uid }))
+            .then(() => this.success({ id: this.uid })) // bug in master branch
             .catch(e => this.failure(e));
     }
 
