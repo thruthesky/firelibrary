@@ -9,7 +9,10 @@
 
 # TODO
 
+
 * Make a forum with chatting functionality. @see Goal
+
+* Remove `language translation` from `firelibrary` since it should be not part of `Firelibrary`. App is responsible for this.
 
 * counting likes/dislikes
  * Client does not need to get all the documents since it has backend option.
@@ -503,12 +506,12 @@ service firebase.storage {
 
 ## Language Translation
 
-* By default, the language is set to English(`en`) and the text is saved in `firelibrary/etc/languages/en.ts` while other language texts are saved separately in JSON format file.
-
-* `en` language file is imported by default and available.
- * So, any language or language code that is not exist in other language file will use the same code in `en` language as fallback.
- * All other language text is loaded from `assets/lang` folder by default like `assets/lang/ko.json`, `assets/lang/cn.json`.
- * JOSN language files are loaded dynamically through `http.get`. So it does not affects the booting speed.
+* @since 2018-04-07. No default 'en.ts' or No default language is chosen. It's much simpler now.
+* Language files are loaded from `assets/lang` folder by default. For instance, `assets/lang/ko.json`, `assets/lang/jp.json`.
+* JOSN language files are loaded dynamically through `http.get`. So it does not affects the booting speed.
+  But since it is dynamically loaded, you may not be able to use immediately on app booting.
+  You may cache it.
+  ////
 
 * **@warning** The key of the language JSON file is case sensitive. So, becareful on the case.
 
@@ -526,6 +529,24 @@ service firebase.storage {
 * You can load a language file dynamically outsite from the app by giving URL. @see `test.component::language()` to know more about it.
 
 
+     *
+     * This will load JSON language file under `assets/lang` by default.
+     * This saves loaded language data in `Base.texts` object variable.
+     *          So, you do not need to care about saving the loaded language data into somewhere.
+     *
+     * You can change the path or url to load language file from.
+     *
+     * If the input `ln` is 'en', then it will just return without any file loading
+     *      since `en` language is loaded by typescript by default.
+     *
+     * @desc If the language is already loaded, it does not load again.
+     *
+     * @param url URL to load langauge.
+     *
+     * @returns
+     *      a Promise of the langauge object on success.
+     *      Otherwise error will be thrown.
+     *
 
 ## Validators
 
@@ -645,3 +666,8 @@ And with that admin account, you can do admin things.
  * It is like you have steps on registration.
   Step 1. input email/password/name.
   Step 2. Upload photo.
+
+* Or, on registration page,
+ * Just get email/password and register.
+ * After that move to 'profile page' to update his profile.
+ 

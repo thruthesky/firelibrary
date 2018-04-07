@@ -2,7 +2,7 @@ import { NOT_FOUND, NO_DOCUMENT_ID, POST_ALREADY_DELETED } from './../etc/error'
 import {
     Base, _,
     COLLECTIONS, POST, PERMISSION_DENIED,
-    CATEGORY_DOES_NOT_EXIST, USER_IS_NOT_LOGGED_IN, CATEGORY_ID_EMPTY, POST_CREATE,
+    CATEGORY_DOES_NOT_EXIST, USER_IS_NOT_LOGGED_IN, POST_CREATE,
     CATEGORY,
     POST_EDIT,
     POST_ID_EMPTY,
@@ -92,7 +92,7 @@ export class Post extends Base {
         }
 
         if (_.isEmpty(post.category)) {
-            return Promise.reject(new Error(CATEGORY_ID_EMPTY));
+            return Promise.reject(new Error(NO_DOCUMENT_ID));
         }
         // if ( !_.isEqual(post.uid, this.user.uid) ) {
         //     return this.failure(PERMISSION_DENIED, {info: 'You cannot post on behalf of other users.'});

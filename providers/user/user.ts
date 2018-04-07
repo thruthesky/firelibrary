@@ -78,7 +78,18 @@ export class User extends Base {
 
     /**
      * Listens on change of user profile data.
+     *
+     * Use this listen when you need to monitor the change of user profile data.
+     * For instance, you want to show thumbnail photo of the user profile photo when the user is going to change it.
+     * When user is going to change his profile photo, the firebase functions will change user profie data
+     * and this listener will call the callback with the user's updated profile photo.
+     *
      * @param callback callback
+     *
+     * @code
+     *          fire.user.listen( data => { ... // do something here // .. } );
+     *
+     *
      */
     listen(callback: (data: USER) => void) {
         this.unsubscribeUserProfile = this.collection.doc(this.uid).onSnapshot(doc => {

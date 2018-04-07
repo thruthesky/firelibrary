@@ -7,7 +7,6 @@ export { Library as _ } from './library';
 export * from './define';
 import * as E from './error';
 export * from './error';
-import { en } from './languages/en';
 import * as SystemSettings from '../../settings';
 import { COLLECTIONS } from './define';
 
@@ -51,7 +50,7 @@ export class Base {
     /**
      * Sets English `en` language to `Base.texts` here.
      */
-    static texts: { [language: string]: any } = { en: en };
+    static texts: { [language: string]: any } = {};
 
 
     /**
@@ -320,7 +319,7 @@ export class Base {
          * So, it is going to get text from English langauge file by default.
          */
         if (!text) { // if current language is `English` or the text of that language not found,
-            if (Base.texts['en'][code] !== void 0) { // get the text of the code in English
+            if (Base.texts['en'] && Base.texts['en'][code]) { // get the text of the code in English
                 text = Base.texts['en'][code];
             }
         }
@@ -352,24 +351,8 @@ export class Base {
      *
      * Sets a language and loads the language file.
      *
-     * This will load JSON language file under `assets/lang` by default.
-     * This saves loaded language data in `Base.texts` object variable.
-     *          So, you do not need to care about saving the loaded language data into somewhere.
      *
-     * You can change the path or url to load language file from.
-     *
-     * If the input `ln` is 'en', then it will just return without any file loading
-     *      since `en` language is loaded by typescript by default.
-     *
-     * @desc If the language is already loaded, it does not load again.
-     *
-     * @param url URL to load langauge.
-     *
-     * @returns
-     *      a Promise of the langauge object on success.
-     *      Otherwise error will be thrown.
-     *
-     * @see README## Langulage Translation
+     * @see README ## Langulage Translation for more information.
      *
      * @code
      *          fire.setLanguage('cn')
@@ -378,9 +361,6 @@ export class Base {
      */
     setLanguage(ln: string, url?: string): Promise<any> {
         Base.language = ln;
-        if (ln === 'en') {
-            return Promise.resolve( Base.texts[ln]);
-        }
         if (Base.texts[ln]) {
             return Promise.resolve(Base.texts[ln]);
         }
