@@ -417,8 +417,9 @@ export class Base {
     setLanguage(ln: string, url?: string): Promise<any> {
         Base.language = ln;
         if (Base.texts[ln]) {
+            // console.log(`Language file is already loaded. Does not going to load again.`);
             this.ln = Base.texts[ln];                   /// Sets reference of current language texts. @see README
-            return Base.texts[ln];
+            return Promise.resolve( Base.texts[ln] );
         }
         if (!url) {
             url = `/${Base.languageFolder}/${ln}.json`;
