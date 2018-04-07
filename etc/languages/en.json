@@ -1,0 +1,23 @@
+{
+  "HOME": "Home",
+  "UNKNOWN-ERROR": "Unkown error. #info",
+  "FIREBASE-API-ERROR": "Firebase API error. #info",
+  "NO-DOCUMENT-ID": "No document ID: #documentID",
+  "NOT-FOUND": "문서가 존재하지 않습니다. Document ID: #documentID",
+  "ALREADY-EXISTS": "Document ID is already exists. Document ID: #documentID",
+  "CATEGORY-ID-EMPTY": "Category ID is empty.",
+  "DOCUMENT-ID-TOO-LONG": "Document ID is too long. Document ID: #documentID",
+  "PERMISSION-DENIED": "Permission denied or insufficient permission. #info",
+  "POST-ID-EMPTY": "Post ID is empty.",
+  "POST-ID-NOT-EMPTY": "Post ID is not empty.",
+  "POST-DELETED": "Post does not exist or already deleted.",
+  "COMMENT-ID-EMPTY": "Comment ID field is empty",
+  "AUTH/EMAIL-ALREADY-IN-USE": "Email address already in use. #info",
+  "AUTH/USER-NOT-FOUND": "User was not found in collection. #info",
+  "AUTH/INVALID-EMAIL": "Invalid email, #info",
+  "AUTH/WEAK-PASSWORD": "Weak password, #info",
+  "PASSWORD-TOO-LONG": "Password length exceeds at maximum 128 characters.",
+  "AUTH/ID-TOKEN-REVOKED": "ID token is revoked/expired. Login again to get a new id token.",
+  "AUTH/WRONG-PASSWORD": "Password was incorrect, #info",
+  "YOU ARE NOT LOGGED IN": "You are not logged in."
+}
