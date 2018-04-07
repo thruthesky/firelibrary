@@ -9,21 +9,21 @@
 
 /// General error code
 /// firebase error code
-export const UNKNOWN = 'unknown-error';
-export const FIREBASE_API_ERROR = 'firebase-api-error';
-export const NOT_FOUND = 'not-found';
-export const ALREADY_EXISTS = 'already-exists';
-export const PERMISSION_DENIED = 'permission-denied';
-export const RESOURCE_EXHAUSTED = 'resource-exhausted';
+export const UNKNOWN = 'UNKNOWN-ERROR';
+export const FIREBASE_API_ERROR = 'FIREBASE-API-ERROR';
+export const NOT_FOUND = 'NOT-FOUND';
+export const ALREADY_EXISTS = 'ALREADY-EXISTS';
+export const PERMISSION_DENIED = 'PERMISSION-DENIED';
+export const RESOURCE_EXHAUSTED = 'RESOURCE-EXHAUSTED';
 
 
-export const USER_IS_NOT_LOGGED_IN = 'You are not logged in';
+export const USER_IS_NOT_LOGGED_IN = 'YOU ARE NOT LOGGED IN';
 
-export const NO_DOCUMENT_ID = 'no-document-id';
-export const DOCUMENT_ID_TOO_LONG = 'document-id-too-long';
-export const DOCUMENT_ID_CANNOT_CONTAIN_SLASH = 'document-id-cannot-cotain-slash';
+export const NO_DOCUMENT_ID = 'NO-DOCUMENT-ID';
+export const DOCUMENT_ID_TOO_LONG = 'DOCUMENT-ID-TOO-LONG';
+export const DOCUMENT_ID_CANNOT_CONTAIN_SLASH = 'DOCUMENT-ID-CANNOT-COTAIN-SLASH';
 
-export const COLLECTION_NOT_EMPTY = 'collection-not-empty';
+export const COLLECTION_NOT_EMPTY = 'COLLECTION-NOT-EMPTY';
 
 
 /// Categories
@@ -34,26 +34,26 @@ export const CATEGORY_DOES_NOT_EXIST = NOT_FOUND;
 
 
 /// Posts
-export const POST_ID_EMPTY = 'post-id-empty';
-export const POST_ALREADY_DELETED = 'post-deleted';
-export const POST_ID_NOT_EMPTY = 'post-id-not-empty';
-export const COMMENT_ID_EMPTY = 'comment-id-empty';
-export const COMMENT_DELETED = 'comment-deleted';
+export const POST_ID_EMPTY = 'POST-ID-EMPTY';
+export const POST_ALREADY_DELETED = 'POST-DELETED';
+export const POST_ID_NOT_EMPTY = 'POST-ID-NOT-EMPTY';
+export const COMMENT_ID_EMPTY = 'COMMENT-ID-EMPTY';
+export const COMMENT_DELETED = 'COMMENT-DELETED';
 
 
-export const ALREADY_LIKED = 'already-liked-or-disliked';
+export const ALREADY_LIKED = 'ALREADY-LIKED-OR-DISLIKED';
 
 
 // USER
 // firebase errors
-export const EMAIL_ALREADY_IN_USE = 'auth/email-already-in-use';
-export const USER_NOT_FOUND = 'auth/user-not-found';
-export const INVALID_EMAIL = 'auth/invalid-email';
-export const WEAK_PASSWORD = 'auth/weak-password';
-export const EXPIRED_ID_TOKEN = 'auth/id-token-revoked';
-export const WRONG_PASSWORD = 'auth/wrong-password';
+export const EMAIL_ALREADY_IN_USE = 'AUTH/EMAIL-ALREADY-IN-USE';
+export const USER_NOT_FOUND = 'AUTH/USER-NOT-FOUND';
+export const INVALID_EMAIL = 'AUTH/INVALID-EMAIL';
+export const WEAK_PASSWORD = 'AUTH/WEAK-PASSWORD';
+export const EXPIRED_ID_TOKEN = 'AUTH/ID-TOKEN-REVOKED';
+export const WRONG_PASSWORD = 'AUTH/WRONG-PASSWORD';
 // firelibrary errors
-export const PASSWORD_TOO_LONG = 'password-too-long';
+export const PASSWORD_TOO_LONG = 'PASSWORD-TOO-LONG';
 
 
 

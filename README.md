@@ -12,7 +12,8 @@
 
 * Make a forum with chatting functionality. @see Goal
 
-* Remove `language translation` from `firelibrary` since it should be not part of `Firelibrary`. App is responsible for this.
+* @CHECK CONSIDER To remove `language translation` from `firelibrary` since it should be not part of `Firelibrary`. Or, simple `Firelibrary` provides it since it is really necessary. like `Library as _`
+
 
 * counting likes/dislikes
  * Client does not need to get all the documents since it has backend option.
@@ -508,45 +509,39 @@ service firebase.storage {
 
 * @since 2018-04-07. No default 'en.ts' or No default language is chosen. It's much simpler now.
 * Language files are loaded from `assets/lang` folder by default. For instance, `assets/lang/ko.json`, `assets/lang/jp.json`.
+* Language texts are saved in `Base.texts`. Hense, no need to save nowhere.
 * JOSN language files are loaded dynamically through `http.get`. So it does not affects the booting speed.
   But since it is dynamically loaded, you may not be able to use immediately on app booting.
-  You may cache it.
-  ////
 
-* **@warning** The key of the language JSON file is case sensitive. So, becareful on the case.
+* You may cache it. or version it to reload/refresh like `?version=load-2`
 
 
-* It needs sometime for the JSON language files to be loaded since they are loaded asynchronously by `http.get()`.
- * If you are going to use the language file immediately before loading the language file, English language may be used in stead.
+* **@note** The key of the language JSON file is transformed to uppercase.
+ So, you can access `Base.texts[en].HOME`.
+ `fire.ln` is a reference of currenly selected language of `Base.texts`.
+ For short, you can access to `fire.ln.HOME`.
 
-* If error code should be defined in language file so it can be translated to end user.
+* Example of using language translation on template.
+
+````
+{{ fire.translate('KEY', {info: 'extra'}) }}   <!-- This calls a method -->
+{{ fire.t('KEY', {info: 'extra'}) }}  <!-- Alias of translate() -->
+{{ fire.ln.HOME }}  <!-- This access a variable. NOT method call. Prefered for speed. -->
+````
+
+* If you are going to use the language file immediately before loading the language file, English language may be used in stead.
+
+* Error code should be defined in language file so it can be translated to end users in their languages.
  * if there is any error that is not translated, you will see a message like `"Error code - not-found - is not translated. Please translate it. It may be firebase error."`.
 
-* You can add information on translated message. @see `Base::translate()`
+* You can add information to display with message. @see `Base::translate()`
 
-* The default English language file has minimal code to translate. You would probably want to add more. @see `test.component::language()` to know how to add more language(code/text) dynamically.
+* You can add language text dynamically. @see `test.component::language()` to know how to add more language(code/text) dynamically.
 
-* You can load a language file dynamically outsite from the app by giving URL. @see `test.component::language()` to know more about it.
+* You can load a language file outsite by giving URL. @see `test.component::language()` to know more about it.
 
 
-     *
-     * This will load JSON language file under `assets/lang` by default.
-     * This saves loaded language data in `Base.texts` object variable.
-     *          So, you do not need to care about saving the loaded language data into somewhere.
-     *
-     * You can change the path or url to load language file from.
-     *
-     * If the input `ln` is 'en', then it will just return without any file loading
-     *      since `en` language is loaded by typescript by default.
-     *
-     * @desc If the language is already loaded, it does not load again.
-     *
-     * @param url URL to load langauge.
-     *
-     * @returns
-     *      a Promise of the langauge object on success.
-     *      Otherwise error will be thrown.
-     *
+* If the language is already loaded, it does not load again.
 
 ## Validators
 
