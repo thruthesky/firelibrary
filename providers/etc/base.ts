@@ -285,6 +285,7 @@ export class Base {
     translate(code: any, info?): string {
         return _.patchMarker(this.getText(code), info);
     }
+
     /**
      * Alias of translate()
      * @param code same as translate()
@@ -351,8 +352,15 @@ export class Base {
      *
      * Sets a language and loads the language file.
      *
-     * This will load JSON language file under `assets/lang` by default. You can change the path.
-     * @desc If the input `ln` is 'en', then it will just return since `en` language is loaded by typescript by default.
+     * This will load JSON language file under `assets/lang` by default.
+     * This saves loaded language data in `Base.texts` object variable.
+     *          So, you do not need to care about saving the loaded language data into somewhere.
+     *
+     * You can change the path or url to load language file from.
+     *
+     * If the input `ln` is 'en', then it will just return without any file loading
+     *      since `en` language is loaded by typescript by default.
+     *
      * @desc If the language is already loaded, it does not load again.
      *
      * @param url URL to load langauge.
@@ -371,16 +379,25 @@ export class Base {
     setLanguage(ln: string, url?: string): Promise<any> {
         Base.language = ln;
         if (ln === 'en') {
-            return Promise.resolve();
+            return Promise.resolve( Base.texts[ln]);
         }
         if (Base.texts[ln]) {
-            return Promise.resolve();
+            return Promise.resolve(Base.texts[ln]);
         }
         if (!url) {
             url = `/${Base.languageFolder}/${ln}.json`;
         }
         return this.http.get(url).toPromise()
             .then(re => Base.texts[ln] = re);
+    }
+
+    /**
+     * Aliash of setLanguage()
+     * @param ln same as setLanguage()
+     * @param url same as setLanguage()
+     */
+    loadLanguage(ln: string, url?: string): Promise<any> {
+        return this.setLanguage(ln, url);
     }
 
 
