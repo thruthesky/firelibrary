@@ -543,6 +543,10 @@ service firebase.storage {
 
 * If the language is already loaded, it does not load again.
 
+* Example of language file. `firelibrary/etc/languages/en.json`
+
+
+
 ## Validators
 
 Please follow the rules below when you are going to write a validators.
