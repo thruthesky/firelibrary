@@ -84,6 +84,9 @@ export class User extends Base {
      * When user is going to change his profile photo, the firebase functions will change user profie data
      * and this listener will call the callback with the user's updated profile photo.
      *
+     * Somehow, I don't know how, when the user logs out, it calls `Firebase.User.signOut()` and
+     * user `doc.onSnapshot()` inside this method is being fired. And it causes an error of onSnapshot().
+     *
      * @param callback callback
      *
      * @code
@@ -101,6 +104,8 @@ export class User extends Base {
             } else {
                 // don't call callback if there is no data/document.
             }
+        }, e => {
+            console.log('Error listening on user doc .onSnapshot. The user may be logged out.', e);
         });
     }
     unlisten() {
