@@ -47,6 +47,7 @@ export class Data extends Base {
         const name = path.pop();
         const dir = path.join('/');
         return firebase.storage().ref(dir).child(name).delete()
+        // return firebase.storage().ref(data.fullPath).delete()
             .then(() => {
                 /**
                  * To delete thumbnail, data.thumbnailUrl must be set.
