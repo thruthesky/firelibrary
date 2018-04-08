@@ -92,8 +92,15 @@ export class User extends Base {
      *
      */
     listen(callback: (data: USER) => void) {
+        if (!this.uid) {
+            return this.failure(USER_IS_NOT_LOGGED_IN);
+        }
         this.unsubscribeUserProfile = this.collection.doc(this.uid).onSnapshot(doc => {
-            callback(<USER>doc.data());
+            if (doc && doc.exists) {
+                callback(<USER>doc.data());
+            } else {
+                // don't call callback if there is no data/document.
+            }
         });
     }
     unlisten() {
@@ -152,7 +159,7 @@ export class User extends Base {
                 return this.updateAuthentication(user, data); // 2. update Authentication(profile) with `dispalyName` and `photoURL`
             })
             .then((user: firebase.User) => {
-                return this.success();
+                return this.success(user.uid);
                 // console.log(`Going to set user data under users collection: `);
                 // return this.set(user, data); // 3. update other information like birthday, gender on `users` collection.
             })
@@ -223,8 +230,8 @@ export class User extends Base {
         // delete data.displayName;
         // delete data.photoURL;
 
-        if ( ! this.uid ) {
-            return this.failure( USER_IS_NOT_LOGGED_IN );
+        if (!this.uid) {
+            return this.failure(USER_IS_NOT_LOGGED_IN);
         }
         data.uid = this.uid;
         delete data.password;

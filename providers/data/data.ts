@@ -40,10 +40,13 @@ export class Data extends Base {
     /**
      * Delete a photo and its thumbnail.
      * It does not edit any `firestore` docuemnt. For profile photo, you need to update by yourself if you need.
+     *
+     * @param data DATA_UPLOAD object.
      */
     delete(data: DATA_UPLOAD): Promise<any> {
         console.log(`Data::delete()`, data);
-        return firebase.storage().ref(data.fullPath).delete()
+        return firebase.storage().ref(data.fullPath)
+            .delete()
             .then(() => {
                 /**
                  * To delete thumbnail, data.thumbnailUrl must be set.
