@@ -253,7 +253,7 @@ Copy the source code of [regitration page on sample](https://github.com/thruthes
 
 
 
-# FireLibrary Domain
+# Domain & Multisite
 
 * Sometimes, you need to run multiple websites( or domains ) in one `Firebase Firestore`.
  For instance, you run a franchise business and you want to give a website for each branch.
@@ -265,12 +265,18 @@ Copy the source code of [regitration page on sample](https://github.com/thruthes
 
  You can change this behaviour on `settings.ts`.
 
+
 * For Mobile App, since it has no domain, you need to hard code on `settings.ts`.
  Mobile App also needs different name.
  So, If you work on building Mobile App, you may need to have a separate work space.
  You may differenciate by environment when you are building for Mobile App.
 
+## Multiple Domain but Single Database
 
+* you don't have to separate data by each domain.
+ * Just fix `domain` variable in `settings.ts` with 'database'.
+   And all data of all domain will be saved under `/fire-library/database/...`.
+   
 
 
 
