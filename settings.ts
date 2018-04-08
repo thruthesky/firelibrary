@@ -8,13 +8,12 @@
  /**
   * Get domain from web browser.
   */
-let domain: string;
+let domain: string = 'localhost';
 if (window.location && window.location.hostname) {
     domain = window.location.hostname;
-} else {
-    domain = 'localhost';
 }
 domain = domain.replace('www.', '');
+
 
 
 
