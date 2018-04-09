@@ -98,6 +98,7 @@ export class User extends Base {
                 callback(<USER>doc.data());
             } else {
                 // don't call callback
+                console.log('User documents are falsy.');
             }
         });
     }
@@ -197,7 +198,7 @@ export class User extends Base {
     * Logout user.
     */
     logout() {
-        this.auth.signOut();
+        return this.auth.signOut();
     }
     /**
     * Update `displayName`, `photoURL` on Authentication.
