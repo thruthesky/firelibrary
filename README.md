@@ -9,6 +9,8 @@
 
 # TODO
 
+* Add 'domain' option on `FireLibrary.forRoot()` so the site can use only one domain.
+
 
 * Make a forum with chatting functionality. @see Goal
 
@@ -22,7 +24,9 @@
    For functions, security rule for like/dislike must be changed.
 * push notifications.
 
-* @bug realtime update is not working when there is no post. it works only after there is a post.
+* @bug realtime update is not working **when there is no post**. it works only after there is a post.
+* Like/dislike updates to slow since it waits realtime updates.
+ Solution: don't wait the realtimeupdate for the voter. Just increase/decrease after saving data into firestore.
 * @bug small. when edit, it appears as edited at first and disappears quickly when it is not the user's post. It may be the problem of `local write` in firestore.
 
 
@@ -198,6 +202,7 @@ $ firebase deploy
 ````
 
 
+* If you create category and try to write post, it will complain in dev-tools console that you need to create `index` on firestore. Just click the link to create index.
 
 
 
