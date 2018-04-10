@@ -205,6 +205,7 @@ export interface POST {
     date?: any; // generated only on client side.
     data?: Array<DATA_UPLOAD>;
     deleted?: boolean;              // This will be true if deleted.
+    options?: any;
 }
 
 
