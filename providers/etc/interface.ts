@@ -53,6 +53,7 @@ export interface CATEGORY {
     footerOnView?: string;
     numberOfPosts?: number;
     numberOfComment?: number;
+    enableLiveChat?: boolean;
     created?: any; ///
     updated?: any; ///
 }
@@ -205,7 +206,7 @@ export interface POST {
     date?: any; // generated only on client side.
     data?: Array<DATA_UPLOAD>;
     deleted?: boolean;              // This will be true if deleted.
-    options?: any;
+    liveChatStatus?: boolean; // `true` if live chat active. Otherwise deactivated.
 }
 
 
