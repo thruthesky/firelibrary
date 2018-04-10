@@ -260,7 +260,7 @@ export class Base {
         if ( e.code ) {
             e.code = (<string>e.code).toUpperCase();
         }
-        console.log('e.code: ', e.code);
+        // console.log('e.code: ', e.code);
         switch (e.code) {
             case E.NOT_FOUND:
                 // console.log('not-found: ', e.message);

@@ -84,8 +84,12 @@ export class User extends Base {
      * When user is going to change his profile photo, the firebase functions will change user profie data
      * and this listener will call the callback with the user's updated profile photo.
      *
-     * Somehow, I don't know how, when the user logs out, it calls `Firebase.User.signOut()` and
-     * user `doc.onSnapshot()` inside this method is being fired. And it causes an error of onSnapshot().
+     * Somehow, I don't know how, when the user logs out, it calls `Firebase.User.signOut()`
+     *      Or when `onAuthStateChanged()` happens,
+     *      `users/.../.../ .doc.onSnapshot()` inside this method is being fired.
+     *      And it causes an error of onSnapshot().
+     *
+     * And it's a rare case and good to ignore.
      *
      * @param callback callback
      *
@@ -105,7 +109,8 @@ export class User extends Base {
                 // don't call callback if there is no data/document.
             }
         }, e => {
-            console.log('Error listening on user doc .onSnapshot. The user may be logged out.', e);
+            console.log(`Error listening on user doc .onSnapshot.
+                The user may be logged out.`, e);
         });
     }
     unlisten() {
@@ -156,6 +161,7 @@ export class User extends Base {
     *          3. Sets other information on `users` collection.
     */
     register(data: USER): Promise<RESPONSE> {
+        console.log('user.register(data: USER)', data);
         return this.registerValidator(data)
             .then(() => {
                 return this.auth.createUserWithEmailAndPassword(data.email, data.password); // 1. create authentication.
@@ -170,7 +176,7 @@ export class User extends Base {
             })
             // .then(a => this.success(a))
             .catch(e => {
-                // console.log('Got error on.', data, e);
+                console.log('>>>>> user.register(data: Data), Got error on.', data, e);
                 return this.failure(e);
             });
     }
@@ -204,7 +210,7 @@ export class User extends Base {
     * Logout user.
     */
     logout() {
-        this.auth.signOut();
+        return this.auth.signOut();
     }
     /**
     * Update `displayName`, `photoURL` on Authentication.
@@ -216,7 +222,8 @@ export class User extends Base {
             displayName: data.displayName,
             photoURL: data.photoURL
         };
-        console.log('updateAuthentication: up: ', up);
+        console.log('user.updateAuthentication(user, data):', data, ' up: ', up);
+        console.log('Going to updateProfile with user.uid: ', user.uid);
         return user.updateProfile(_.sanitize(up)).then(x => user);
     }
 
@@ -238,14 +245,21 @@ export class User extends Base {
         if (!this.uid) {
             return this.failure(USER_IS_NOT_LOGGED_IN);
         }
+        data = _.sanitize( data );
         data.uid = this.uid;
         delete data.password;
         data.created = firebase.firestore.FieldValue.serverTimestamp();
         const ref = this.collection.doc(data.uid);
-        console.log(`create at: ${ref.path} with: `, data);
+        console.log(`user.create(data: USER) at: ${ref.path} with: `, data);
         return ref.set(data)
-            .then(() => this.success({ id: data.uid }))
-            .catch(e => this.failure(e));
+            .then(() => {
+                console.log('    user.create(data) success:');
+                return this.success({ id: data.uid });
+            })
+            .catch(e => {
+                console.log('    user.create(data) failed:');
+                return this.failure(e);
+            });
     }
 
 
