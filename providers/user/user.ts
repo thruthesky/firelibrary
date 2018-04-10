@@ -2,7 +2,7 @@
     INVALID_EMAIL, WEAK_PASSWORD, PASSWORD_TOO_LONG, UNKNOWN, FIREBASE_API_ERROR,
     USER_NOT_FOUND, USER_IS_NOT_LOGGED_IN
 } from '../etc/error';
-import { Base, _, USER, COLLECTIONS, RESPONSE, USER_CREATE, PERMISSION_DENIED, USER_DATA } from './../etc/base';
+import { Base, _, USER, COLLECTIONS, RESPONSE, USER_CREATE, PERMISSION_DENIED, USER_DATA, IS_ADMIN } from './../etc/base';
 import * as firebase from 'firebase';
 export class User extends Base {
     private unsubscribeUserProfile;
@@ -279,5 +279,27 @@ export class User extends Base {
             .catch(e => this.failure(e));
     }
 
+    /**
+     * Determine if current user is the admin.
+     *
+     * @returns `true` if the current user is the admin. Otherwise `false`.
+     *
+     */
+    isAdmin(): Promise<IS_ADMIN> {
+        const adminRef = this.settingsReference.doc('admin');
+        return adminRef.get()
+        .then(doc => {
+            if (doc && doc.exists) {
+                // console.log('data: ', doc.data());
+                if (this.auth.currentUser.email === doc.data()['email']) {
+                    return this.success({isAdmin: true});
+                } else {
+                    return this.success({isAdmin: false});
+                    // throw new Error('Current user is not an admin.');
+                }
+            }
+        })
+        .catch(e => this.failure(e));
+    }
 }
 

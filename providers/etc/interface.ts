@@ -80,6 +80,7 @@ export interface USER_CREATE extends RESPONSE {
         id: string;
     };
 }
+
 export interface CATEGORY_CREATE extends RESPONSE {
     data: {
         id: string; // Category id.
@@ -147,7 +148,11 @@ export interface USER_DATA extends RESPONSE {
     };
 }
 
-
+export interface IS_ADMIN extends RESPONSE {
+    data: {
+        isAdmin: boolean;
+    };
+}
 export interface POST_PAGE_OPTIONS {
     category?: string;
     limit: number;
