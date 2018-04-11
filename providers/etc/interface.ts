@@ -186,6 +186,7 @@ export interface POST {
     subcategory?: string;           // Sub category to categorize in detail.
     tags?: string;                  // Tags to search
     displayName?: string;
+    authorPhoto?: string;
     email?: string;
     password?: string;              // Anonymous need to put a password to update/delete.
     phoneNumber?: string;
