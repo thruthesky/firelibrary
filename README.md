@@ -9,7 +9,9 @@
 
 # TODO
 
-
+* `disableDeleteWithDependant` should be changed to `disableEditWithDependant`.
+  * and implement it work. If a post or a comment has a reply, then
+    author cannot change/hide/delete/move it.
 * Make a forum with chatting functionality. @see Goal
 
 * @CHECK CONSIDER To remove `language translation` from `firelibrary` since it should be not part of `Firelibrary`. Or, simple `Firelibrary` provides it since it is really necessary. like `Library as _`
@@ -106,9 +108,12 @@
 
 ### Conditions.
 
-* The category must have `enableLiveChat` property to true.
-* if `enableLiveChat` is set to true,
- * then, the app must get title, 255 chars of content, meta data(extra info like author, like/dislike, dates etc ),
+* The category must have `liveChatTimeout` property to time interval in seconds.
+  * For instance, 60 * 60 * 24 as a day.
+* if `liveChatTimeout` has value,
+  * it does live-chat until the liveChatTimeout 'timeouts' from 'created'.
+
+ * then, on post list display page, the app must get title, 255 chars of content, meta data(extra info like author, like/dislike, dates etc ),
   255 chars of last comment(chat).
  * And display as a post list.
  * The post list should be realtime updated.
@@ -120,11 +125,14 @@
    They have unsubscribe options.
  * Other users ( who are not chatting ) can subscribe/unsubscribe that post for updating new chat. and get immediate notifications. ( delaying push notificatio delivery is not an easy work. no good for function and cron. )
  
-* When a open is 24 hours old, then the design of the post become a normal post view unless the author set it `statusLiveChat` to `continue`
-* When the author of post set `statusLiveChat` to `close`, then the design becomes a normal post until `statusLiveChat` become `continue`.
+* When a post is older than `liveChatTimeout`,
+  then `live chat` stops. and the design of the post become a normal post view unless the author set `liveChatExpires` to until when the `live chat` continues. it's a date/time.
 
-
-
+     * by default it may be `undefined`.
+     * If author choose, to continue `live chat`,
+     *  then extend expiration for 30 days.
+     *  and author can change the expiration date by 30 days, 60 days, 6month, 1year.
+     
 
 # Sample Apps for FireLibrary
 
