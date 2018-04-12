@@ -207,7 +207,7 @@ export interface POST {
     date?: any; // generated only on client side.
     data?: Array<DATA_UPLOAD>;
     deleted?: boolean;              // This will be true if deleted.
-    statusLiveChat?: boolean; // `true` if live chat active. Otherwise deactivated.
+    liveChatExpires?: number; // time value in milliseconds.
 }
 
 
