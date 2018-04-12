@@ -53,7 +53,7 @@ export interface CATEGORY {
     footerOnView?: string;
     numberOfPosts?: number;
     numberOfComment?: number;
-    enableLiveChat?: boolean;
+    liveChatTimeout?: number;
     created?: any; ///
     updated?: any; ///
 }
@@ -207,6 +207,13 @@ export interface POST {
     date?: any; // generated only on client side.
     data?: Array<DATA_UPLOAD>;
     deleted?: boolean;              // This will be true if deleted.
+
+    /**
+     * by default it may be `undefined`.
+     * If author choose, to continue `live chat`,
+     *  then extend expiration days by 30 days.
+     *  and author can change the expiration date by 30 days, 60 days, 6month, 1year.
+     */
     liveChatExpires?: number; // time value in milliseconds.
 }
 
