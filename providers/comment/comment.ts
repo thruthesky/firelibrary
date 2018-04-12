@@ -18,22 +18,22 @@ export class Comment extends Base {
     private user: User;
 
     /**
-     * This object holds comment document objects.
-     * The key is comment id.
-     */
+    * This object holds comment document objects.
+    * The key is comment id.
+    */
     comments: { [commentId: string]: COMMENT } = {};
     /**
-     * This object holds comments' IDs of each post.
-     * The key is post document ID.
-     */
+    * This object holds comments' IDs of each post.
+    * The key is post document ID.
+    */
     commentIds: { [postId: string]: Array<string> } = {};
 
 
     /**
-     * Subscribes and unsubscribes comment's likes/dislike/changes by post.
-     * This is because in some cases, only few posts may be destroyed from page and
-     * it detaches the listeners of those posts only.
-     */
+    * Subscribes and unsubscribes comment's likes/dislike/changes by post.
+    * This is because in some cases, only few posts may be destroyed from page and
+    * it detaches the listeners of those posts only.
+    */
     private _unsubscribeLikes: { [postId: string]: Array<any> } = {};
     private _unsubscribeComments: { [postId: string]: Array<any> } = {};
     constructor(
@@ -44,18 +44,18 @@ export class Comment extends Base {
 
 
     /**
-     * Returns a temporary comment document id.
-     *
-     * @return string comment document id.
-     */
+    * Returns a temporary comment document id.
+    *
+    * @return string comment document id.
+    */
     getId(): string {
         return this.collection.doc().id;
     }
 
 
     /**
-     * Returns parent comment.
-     */
+    * Returns parent comment.
+    */
     getParentComment(commentId): COMMENT {
         if (commentId) {
             const comment = this.getComment(commentId);
@@ -69,10 +69,10 @@ export class Comment extends Base {
     }
 
     /**
-     * Returns the comment from loaded comment array.
-     * @param commentId comment document id.
-     * @returns a comment document object.
-     */
+    * Returns the comment from loaded comment array.
+    * @param commentId comment document id.
+    * @returns a comment document object.
+    */
     getComment(commentId): COMMENT {
         if (this.comments[commentId] === void 0) {
             return <any>[];
@@ -82,28 +82,35 @@ export class Comment extends Base {
     }
 
     /**
-     * Comment Collection under a post.
-     * @param postId the post document id.
-     */
+    * Comment Collection under a post.
+    * @param postId the post document id.
+    */
     private commentCollection(postId: string) {
         return this.collectionRef(COLLECTIONS.POSTS).doc(postId).collection(COLLECTIONS.COMMENTS);
     }
 
     /**
-     * Returns comment reference.
-     */
+    * Returns comment reference.
+    */
     private comment(postId: string, commentId: string) {
         return this.commentCollection(postId).doc(commentId);
     }
 
     /**
-     * Loads all the comments under the postId.
-     * @param postId post document id
-     * @returns an Array of comment IDs of the post.
-     */
+    * Loads all the comments under the postId.
+    * @param postId post document id
+    * @returns an Array of comment IDs of the post.
+    */
+    // load(postId: string, limit = 10): Promise<Array<string>> { // put limit later
     load(postId: string): Promise<Array<string>> {
         const ref = this.commentCollection(postId);
         // console.log(`gets at: ${ref.path}`);
+        // if (limit && limit > 0) {
+        //     ref = this.commentCollection(postId).limit(limit);
+        // } else {
+        //     ref = this.commentCollection(postId);
+        // }
+
         return ref.orderBy('created', 'asc').get().then(s => {
             s.forEach(doc => {
                 const c: COMMENT = doc.data();
@@ -125,28 +132,28 @@ export class Comment extends Base {
 
 
     /**
-     * Gets a comment from forestore.
-     * @description It does not change the comments array loaded by `load()`.
-     *  Meaning it will not reflect the template page.
-     */
+    * Gets a comment from forestore.
+    * @description It does not change the comments array loaded by `load()`.
+    *  Meaning it will not reflect the template page.
+    */
     get(postId: string, commentId?: string): Promise<COMMENT> {
         const commentRef = this.comment(postId, commentId);
         return commentRef.get()
-            .then(doc => {
-                if (doc.exists) {
-                    return this.success(doc.data());
-                } else {
-                    return this.failure(new Error(NOT_FOUND));
-                }
-            })
-            .catch(e => this.failure(e));
+        .then(doc => {
+            if (doc.exists) {
+                return this.success(doc.data());
+            } else {
+                return this.failure(new Error(NOT_FOUND));
+            }
+        })
+        .catch(e => this.failure(e));
     }
     /**
-     * Gets comments of a post from firestore.
-     *
-     * @description It does not change the comments array loaded by `load()`.
-     *  Meaning it will not reflect the template page.
-     */
+    * Gets comments of a post from firestore.
+    *
+    * @description It does not change the comments array loaded by `load()`.
+    *  Meaning it will not reflect the template page.
+    */
     gets() {
 
     }
@@ -154,10 +161,10 @@ export class Comment extends Base {
 
 
     /**
-     * Sorts the comments.
-     * @desc The app may need to rerender the page depending on the app context.
-     * @param postId Post Document ID
-     */
+    * Sorts the comments.
+    * @desc The app may need to rerender the page depending on the app context.
+    * @param postId Post Document ID
+    */
     sortComments(postId: string, comment: COMMENT) {
         console.log(`sortComment for: `, postId, comment);
         if (this.commentIds[postId] === void 0) {
@@ -166,7 +173,8 @@ export class Comment extends Base {
         const pos = this.commentIds[postId].findIndex(id => id === comment.parentId);
         console.log('pos: ', pos);
         if (pos === - 1) {
-            this.commentIds[postId].push(comment.id);
+            // this.commentIds[postId].push(comment.id); // chronological (oldest - newest)
+            this.commentIds[postId].unshift(comment.id); // reverse chronological (newest - oldest)
         } else {
             this.commentIds[postId].splice(pos + 1, 0, comment.id);
         }
@@ -177,10 +185,10 @@ export class Comment extends Base {
 
 
     /**
-     * Creates a comment.
-     * @param comment
-     *      comment[postId] and comment[parentId] is already set.
-     */
+    * Creates a comment.
+    * @param comment
+    *      comment[postId] and comment[parentId] is already set.
+    */
     create(comment: COMMENT): Promise<COMMENT_CREATE> {
         if (!comment.id) {
             return this.failure(COMMENT_ID_EMPTY);
@@ -200,13 +208,13 @@ export class Comment extends Base {
         const id = comment.id;
         delete comment.id;
         return ref.doc(id).set(comment)
-            .then(doc => {
-                return this.success({ id: id });
-            })
-            .catch(e => {
-                console.log(`failed: `, e);
-                return this.failure(e);
-            });
+        .then(doc => {
+            return this.success({ id: id });
+        })
+        .catch(e => {
+            console.log(`failed: `, e);
+            return this.failure(e);
+        });
     }
 
 
@@ -229,7 +237,7 @@ export class Comment extends Base {
         return ref.update(comment).then(() => {
             return this.success({ id: commentId });
         })
-            .catch(e => this.failure(e));
+        .catch(e => this.failure(e));
 
     }
 
@@ -242,19 +250,19 @@ export class Comment extends Base {
         const postId = this.comments[comment.id].postId;
         const ref = this.comment(postId, comment.id);
         return ref.update(comment)
-            .then(() => this.success({ id: id }))
-            .catch(e => this.failure(e));
+        .then(() => this.success({ id: id }))
+        .catch(e => this.failure(e));
     }
 
     /**
-     * Returns collection of comment like/dislike.
-     * @param commentId Comment Document ID
-     * @param collectionName Subcollection name under comment
-     */
+    * Returns collection of comment like/dislike.
+    * @param commentId Comment Document ID
+    * @param collectionName Subcollection name under comment
+    */
     private likeColllection(commentId: string, collectionName: string) {
         const postId = this.comments[commentId].postId;
         return this.comment(postId, commentId)
-            .collection(collectionName);
+        .collection(collectionName);
     }
 
     like(commentId: string): Promise<any> {
@@ -267,8 +275,8 @@ export class Comment extends Base {
 
 
     /**
-     *
-     */
+    *
+    */
     private subscribeCommentChange(postId: string, comment: COMMENT) {
         if (!this.settings.listenOnCommentChange) {
             return;
@@ -293,7 +301,7 @@ export class Comment extends Base {
                     console.log('pending', doc.metadata.hasPendingWrites, 'from cache: ', doc.metadata.fromCache);
                 } else {
                     console.log('pending', doc.metadata.hasPendingWrites, 'type: ', change.type,
-                        'from cache: ', doc.metadata.fromCache, doc.data());
+                    'from cache: ', doc.metadata.fromCache, doc.data());
                     const comment: COMMENT = doc.data();
                     comment.id = doc.id;
                     // console.log(`exists: ${this.pagePosts[post.id]}`);
@@ -317,13 +325,13 @@ export class Comment extends Base {
     }
 
     /**
-     * Add a newly created post on top of post list on the page
-     *  - and subscribe post changes if `settings.listenPostChange` is set to true.
-     *  - and subscribe like/dislike based on the settings.
-     *
-     * @desc It's important to understand how `added` event fired on `onSnapshot)`.
-     *
-     */
+    * Add a newly created post on top of post list on the page
+    *  - and subscribe post changes if `settings.listenPostChange` is set to true.
+    *  - and subscribe like/dislike based on the settings.
+    *
+    * @desc It's important to understand how `added` event fired on `onSnapshot)`.
+    *
+    */
     private insertComment(postId, comment: COMMENT) {
         if (this.comments[comment.id] === void 0) {
             console.log(`insertComment: `, comment);
@@ -334,8 +342,8 @@ export class Comment extends Base {
         }
     }
     /**
-     * When listening the last post on collection in realtime, it often fires `modified` event on new docuemnt created.
-     */
+    * When listening the last post on collection in realtime, it often fires `modified` event on new docuemnt created.
+    */
     private updateComment(postId, comment: COMMENT) {
         console.log('updateComment id: ', comment.id);
         if (this.comments[comment.id]) {
@@ -346,18 +354,18 @@ export class Comment extends Base {
         }
     }
     /**
-     * This method is no longer in use.
-     *
-     * @deprecated @see README### No post delete.
-     */
+    * This method is no longer in use.
+    *
+    * @deprecated @see README### No post delete.
+    */
     private removeComment(comment: COMMENT) {
     }
 
 
     /**
-     * Updates number of likes/dislikes.
-     * @desc It may need to be rerendered after event handling.
-     */
+    * Updates number of likes/dislikes.
+    * @desc It may need to be rerendered after event handling.
+    */
     private subscribeLikes(comment: COMMENT) {
         if (!this.settings.listenOnCommentLikes) {
             return;
@@ -397,9 +405,9 @@ export class Comment extends Base {
 
 
     /**
-     * Unsubscribe for the realtime update of changes/likes/dislikes.
-     * If you don't unsubscribe, you have to pay more since it will still listen(read) the documents that are no longer needed.
-     */
+    * Unsubscribe for the realtime update of changes/likes/dislikes.
+    * If you don't unsubscribe, you have to pay more since it will still listen(read) the documents that are no longer needed.
+    */
     unsubscribes(postId) {
         if (this._unsubscribeComments[postId] !== void 0 && this._unsubscribeComments[postId].length) {
             this._unsubscribeComments[postId].map(unsubscribe => unsubscribe());
@@ -410,10 +418,10 @@ export class Comment extends Base {
     }
 
     /**
-     * Destroys all the resources that were used to display comments of a post.
-     * @desc it should be called from `OnDestroy` of the (parent) comment component to unsubscribe the listeners.
-     *      or anywhere you want to destroy the comments that belong to the post.
-     */
+    * Destroys all the resources that were used to display comments of a post.
+    * @desc it should be called from `OnDestroy` of the (parent) comment component to unsubscribe the listeners.
+    *      or anywhere you want to destroy the comments that belong to the post.
+    */
     destory(post: POST) {
         console.log(`Going to destroy comments for post.id: `, post.id);
         this.unsubscribes(post.id);
