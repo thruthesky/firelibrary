@@ -101,15 +101,8 @@ export class Comment extends Base {
     * @param postId post document id
     * @returns an Array of comment IDs of the post.
     */
-    // load(postId: string, limit = 10): Promise<Array<string>> { // put limit later
     load(postId: string): Promise<Array<string>> {
         const ref = this.commentCollection(postId);
-        // console.log(`gets at: ${ref.path}`);
-        // if (limit && limit > 0) {
-        //     ref = this.commentCollection(postId).limit(limit);
-        // } else {
-        //     ref = this.commentCollection(postId);
-        // }
 
         return ref.orderBy('created', 'asc').get().then(s => {
             s.forEach(doc => {
@@ -173,8 +166,7 @@ export class Comment extends Base {
         const pos = this.commentIds[postId].findIndex(id => id === comment.parentId);
         console.log('pos: ', pos);
         if (pos === - 1) {
-            // this.commentIds[postId].push(comment.id); // chronological (oldest - newest)
-            this.commentIds[postId].unshift(comment.id); // reverse chronological (newest - oldest)
+            this.commentIds[postId].push(comment.id);
         } else {
             this.commentIds[postId].splice(pos + 1, 0, comment.id);
         }
