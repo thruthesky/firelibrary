@@ -186,7 +186,7 @@ export interface POST {
     subcategory?: string;           // Sub category to categorize in detail.
     tags?: string;                  // Tags to search
     displayName?: string;
-    authorPhoto?: string;
+    // authorPhoto?: string;   @Deprecated - If author decides to change its profile photo we need to change all photo in his posts.
     email?: string;
     password?: string;              // Anonymous need to put a password to update/delete.
     phoneNumber?: string;
@@ -224,6 +224,7 @@ export interface COMMENT {
     postId?: string;                // root post id
     parentId?: string;              // comment parent id. If the comment is immediate reply of a post, then it is a empty stirng.
     uid?: string;
+    authorPhoto?: string;
     displayName?: string;
     content?: string;
     created?: any;
