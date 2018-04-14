@@ -526,6 +526,12 @@ service firebase.storage {
 
 * You may cache it. or version it to reload/refresh like `?version=load-2`
 
+```` javascript
+this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['reloadTag'] )
+    .then(re => {}).
+    catch( e => alert(e.message) );
+````
+
 
 * **@note** The key of the language JSON file is transformed to uppercase.
  So, you can access `Base.texts[en].HOME`.
@@ -534,7 +540,7 @@ service firebase.storage {
 
 * Example of using language translation on template.
 
-````
+```` HTML
 {{ fire.translate('KEY', {info: 'extra'}) }}   <!-- This calls a method -->
 {{ fire.t('KEY', {info: 'extra'}) }}  <!-- Alias of translate() -->
 {{ fire.ln.HOME }}  <!-- This access a variable. NOT method call. Prefered for speed. -->
