@@ -345,11 +345,21 @@ export class Base {
      * It does not translates. Meaning it does not add `information` to the result text. It simply returns.
      * If the language is not `en`, then it gets the text of the language.
      *
+     * @param code code.
+     *
      * @returns text of that code.
      *      - if the code does not exist on text file, then it returns the code itself.
+     *
+     *      - if `code` is falsy, it returns the whole texts of the language.
+     *
+     * @example How to display texts on template
+     *          {{ fire.getText() | json }}
      */
     getText(code: any): string {
         const ln = this.getLanguage();
+        if ( ! code ) {
+            return Base.texts[ln];
+        }
         /**
          * `text` should hold the text of the language code.
          */
