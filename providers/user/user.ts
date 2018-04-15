@@ -83,12 +83,6 @@ export class User extends Base {
     /**
      * Listens on change of user profile data.
      *
-<<<<<<< HEAD
-     * Does not call callback if `onSnapshot()` happens without data ( or doc is empty. )
-     *
-     * @param callback callback
-     *
-=======
      * Use this listen when you need to monitor the change of user profile data.
      * For instance, you want to show thumbnail photo of the user profile photo when the user is going to change it.
      * When user is going to change his profile photo, the firebase functions will change user profie data
@@ -106,7 +100,6 @@ export class User extends Base {
      * @code
      *          fire.user.listen( data => { ... // do something here // .. } );
      *
->>>>>>> master
      *
      */
     listen(callback: (data: USER) => void) {
@@ -117,17 +110,11 @@ export class User extends Base {
             if (doc && doc.exists) {
                 callback(<USER>doc.data());
             } else {
-<<<<<<< HEAD
-                // don't call callback
-                console.log('User documents are falsy.');
-            }
-=======
                 // don't call callback if there is no data/document.
             }
         }, e => {
             console.log(`Error listening on user doc .onSnapshot.
                 The user may be logged out.`, e);
->>>>>>> master
         });
     }
     unlisten() {

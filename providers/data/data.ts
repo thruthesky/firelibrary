@@ -45,16 +45,11 @@ export class Data extends Base {
      */
     delete(data: DATA_UPLOAD): Promise<any> {
         console.log(`Data::delete()`, data);
-<<<<<<< HEAD
         const path = data.fullPath.split('/');
         const name = path.pop();
         const dir = path.join('/');
         return firebase.storage().ref(dir).child(name).delete()
         // return firebase.storage().ref(data.fullPath).delete()
-=======
-        return firebase.storage().ref(data.fullPath)
-            .delete()
->>>>>>> master
             .then(() => {
                 /**
                  * To delete thumbnail, data.thumbnailUrl must be set.
