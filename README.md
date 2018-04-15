@@ -9,6 +9,10 @@
 
 # TODO
 
+* Update firebase functions to v1.0
+  * [Firebase 1.0 Update](https://firebase.google.com/docs/functions/beta-v1-diff)
+
+
 * `disableDeleteWithDependant` should be changed to `disableEditWithDependant`.
   * and implement it work. If a post or a comment has a reply, then
     author cannot change/hide/delete/move it.
@@ -541,9 +545,8 @@ this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['relo
     catch( e => alert(e.message) );
 ````
 
-
 * **@note** The key of the language JSON file is transformed to uppercase.
- So, you can access `Base.texts[en].HOME`.
+ So, you can access `Base.texts[en].HOME` even though it is stated as `home` in en.json file.
  `fire.ln` is a reference of currenly selected language of `Base.texts`.
  For short, you can access to `fire.ln.HOME`.
 

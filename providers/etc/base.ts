@@ -257,7 +257,7 @@ export class Base {
      */
     isFirebaseError(e, info): boolean {
         // console.log('error: ', e.code, e.message);
-        if ( e.code ) {
+        if (e.code) {
             e.code = (<string>e.code).toUpperCase();
         }
         // console.log('e.code: ', e.code);
@@ -308,9 +308,9 @@ export class Base {
                 this.test(e.code === PERMISSION_DENIED, 'User has not logged in', e.code, e, e.info);
             });
      */
-    convertFirebaseError( e ) {
+    convertFirebaseError(e) {
         const info = {};
-        if ( this.isFirebaseError( e, info ) ) {
+        if (this.isFirebaseError(e, info)) {
             this.translateFirebaseError(e, info);
             e['info'] = info;
         }
@@ -336,7 +336,7 @@ export class Base {
      * @param info same as transate()
      */
     t(code: any, info?: any): string {
-        console.log('code', code);
+        // console.log('code', code);
         return this.translate(code, info);
     }
 
@@ -358,7 +358,7 @@ export class Base {
      */
     getText(code: string): string {
         const ln = this.getLanguage();
-        if ( ! code ) {
+        if (!code) {
             return Base.texts[ln];
         }
         code = code.toUpperCase();
@@ -373,7 +373,7 @@ export class Base {
             }
         }
 
-        console.log('code: ', code, 'text: ', text);
+        // console.log('code: ', code, 'text: ', text);
         /**
          * If `text` has not any value, then the language( language file ) has no text for that code.
          * So, it is going to get text from English langauge file by default.
@@ -433,21 +433,22 @@ export class Base {
         Base.language = ln;
         if (Base.texts[ln]) {
             // console.log(`Language file is already loaded. Does not going to load again.`);
-            this.ln = Base.texts[ln];                   /// Sets reference of current language texts. @see README
-            return Promise.resolve( Base.texts[ln] );
+            this.ln = Base.texts[ln];
+            // this.ln = Object.assign(this.ln, Base.texts[ln]);                   /// Sets reference of current language texts. @see README
+            return Promise.resolve(Base.texts[ln]);
         }
         if (!url) {
             url = `/${Base.languageFolder}/${ln}.json`;
         }
         return this.http.get(url).toPromise()
             .then(re => {
-                if ( re ) {
+                if (re) {
                     const keys = Object.keys(re);
-                    if ( keys.length ) {                /// Make the case of keys uppercase. @see README.
-                        for ( const k of keys ) {
+                    if (keys.length) {                /// Make the case of keys uppercase. @see README.
+                        for (const k of keys) {
                             const uppercase = k.toLocaleUpperCase();
-                            if ( k !== uppercase ) {
-                                re[ uppercase ] = re[ k ];
+                            if (k !== uppercase) {
+                                re[uppercase] = re[k];
                                 delete re[k];
                             }
                         }
@@ -455,7 +456,7 @@ export class Base {
                 }
                 Base.texts[ln] = re;
                 this.ln = Base.texts[ln];               /// Sets reference of current language texts. @see README
-                console.log(` =========== >>>>> Language ${ln} has been set.`);
+                // console.log(` =========== >>>>> Language ${ln} has been set.`);
                 return Base.texts[ln];
             });
     }
