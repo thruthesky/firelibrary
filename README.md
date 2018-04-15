@@ -560,8 +560,14 @@ this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['relo
 
   * Since, language json file loaded by Async, `pipe` cannot use newly loaded language
     Unless
-    * it move to next page ( by re-runing the pipe )
+    * it move to next page ( by re-runing the pipe ). You can do some trick here. Move to home page or another page after 1 seconds when user changes language.
     * or the app refreshes the site.
+  * One solution for realtime update with pipe is that,
+    * use `fire.ln.[CODE]` for texts that is not being re-redraw like 'header', 'footer', or anyting outside `<router-outlet>`.
+    * And make a separate page for language change and if user changes language,
+      wait for it loads that langauage( it's a promise call and you can wait ),
+      and move to another page or 
+
   * You will need to use either `fire.t()` or `fire.ln.[CODE]` to avail the language text immediately after (asynchronously) loading.
   * If you are going to use `fire.t()`, the template will redraw it endlessly.
     So, it is better to use `fire.ln.[CODE]` unless you have information to add into the text.
