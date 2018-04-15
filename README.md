@@ -553,7 +553,22 @@ this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['relo
 {{ fire.translate('KEY', {info: 'extra'}) }}   <!-- This calls a method -->
 {{ fire.t('KEY', {info: 'extra'}) }}  <!-- Alias of translate() -->
 {{ fire.ln.HOME }}  <!-- This access a variable. NOT method call. Prefered for speed. -->
+{{ 'HOME' | t }} <!-- PIPE -->
 ````
+
+* Realtime update when changing language or loading a language on bootstrap.
+
+  * Since, language json file loaded by Async, `pipe` cannot use newly loaded language
+    Unless
+    * it move to next page ( by re-runing the pipe )
+    * or the app refreshes the site.
+  * You will need to use either `fire.t()` or `fire.ln.[CODE]` to avail the language text immediately after (asynchronously) loading.
+  * If you are going to use `fire.t()`, the template will redraw it endlessly.
+    So, it is better to use `fire.ln.[CODE]` unless you have information to add into the text.
+
+
+{{ 'Help' | t }}
+{{ a.fire.getText('help') | json }}
 
 * If you are going to use the language file immediately before loading the language file, English language may be used in stead.
 
