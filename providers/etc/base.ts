@@ -7,7 +7,6 @@ export { Library as _ } from './library';
 export * from './define';
 import * as E from './error';
 export * from './error';
-import { en } from './languages/en';
 import * as SystemSettings from '../../settings';
 import { COLLECTIONS } from './define';
 
@@ -15,6 +14,13 @@ import { COLLECTIONS } from './define';
 
 
 export class Base {
+
+    /**
+     * Settings on how the FireService works
+     */
+
+    static settings: FIRESERVICE_SETTINGS = {};
+
     /**
      * Root collection name.
      */
@@ -49,16 +55,14 @@ export class Base {
     static language = 'en';
     static languageFolder = 'assets/lang'; // It can be changed by settings ` Base.languageFolder = '.../...'; `
     /**
-     * Sets English `en` language to `Base.texts` here.
+     * Sets language texts in `Base.texts` static object.
      */
-    static texts: { [language: string]: any } = { en: en };
-
-
+    static texts: { [language: string]: any } = {};
     /**
-     * Settings on how the FireService works
+     * @see README # Langauge
      */
+    ln: any = {};
 
-    static settings: FIRESERVICE_SETTINGS = {};
 
     /// @todo this generate error on packagmr. it cannot be referenced as static.
     // static ngZone;
@@ -240,16 +244,25 @@ export class Base {
         e['_count'] = 1;
         return Promise.reject(e);
     }
+
     /**
-    * Returns true if the error is a Firebase Error object.
-    *
-    * @description
-    *      - It checks if the error code is the same as `Firebase Error Code`. If yes, it returns true.
-    */
+     * Returns true if the error is a Firebase Error object.
+     *
+     * @param e is passed by reference and `e.code` will be transformed to Uppercase.
+     * @param info is passed by referenced and will have error info.
+     *
+     * Error code of firebase is lowercase. And it needs to be transformed to uppercase.
+     *
+     * It checks if the error code is the same as `Firebase Error Code`. If yes, it returns true.
+     */
     isFirebaseError(e, info): boolean {
         // console.log('error: ', e.code, e.message);
+        if ( e.code ) {
+            e.code = (<string>e.code).toUpperCase();
+        }
+        // console.log('e.code: ', e.code);
         switch (e.code) {
-            case 'not-found':
+            case E.NOT_FOUND:
                 // console.log('not-found: ', e.message);
                 const str: string = e.message;
                 info['documentID'] = str.split('/').pop();
@@ -278,19 +291,52 @@ export class Base {
     }
 
     /**
+     * Converts Firebase error into Error.
+     *
+     * It converts Firebsae error into `Firelibrary` Error.
+     * It returns with
+     *      - converted error code in `error.code`
+     *      - error message in `error.message`
+     *      - error info in `error.info`.
+     *
+     * @param e Firebase Error Object passed by reference.
+     *
+     * @example of use. Use this method when you query to firestore by userself.
+     *   await this.fire.collectionRef(COLLECTIONS.POSTS).add({ title: 'add' })
+            .catch(e => {
+                this.fire.convertFirebaseError(e);
+                this.test(e.code === PERMISSION_DENIED, 'User has not logged in', e.code, e, e.info);
+            });
+     */
+    convertFirebaseError( e ) {
+        const info = {};
+        if ( this.isFirebaseError( e, info ) ) {
+            this.translateFirebaseError(e, info);
+            e['info'] = info;
+        }
+    }
+
+    /**
      * Returns translated text string.
      * @param code code to translate
      * @param info information to add on the translated text
+     *
+     * @example
+     *          {{ fire.translate('HOME') }}
+     *          {{ fire.t('HOME') }}
+     *          {{ fire.ln.HOME }}
      */
-    translate(code: any, info?): string {
+    translate(code: string, info?): string {
         return _.patchMarker(this.getText(code), info);
     }
+
     /**
      * Alias of translate()
      * @param code same as translate()
      * @param info same as transate()
      */
     t(code: any, info?: any): string {
+        console.log('code', code);
         return this.translate(code, info);
     }
 
@@ -300,11 +346,23 @@ export class Base {
      * It does not translates. Meaning it does not add `information` to the result text. It simply returns.
      * If the language is not `en`, then it gets the text of the language.
      *
+     * @param code code. The code will be transformed to uppercase.
+     *
      * @returns text of that code.
      *      - if the code does not exist on text file, then it returns the code itself.
+     *
+     *      - if `code` is falsy, it returns the whole texts of the language.
+     *
+     * @example How to display texts on template
+     *          {{ fire.getText() | json }}
      */
-    getText(code: any): string {
+    getText(code: string): string {
         const ln = this.getLanguage();
+        if ( ! code ) {
+            return Base.texts[ln];
+        }
+        code = code.toUpperCase();
+
         /**
          * `text` should hold the text of the language code.
          */
@@ -314,12 +372,14 @@ export class Base {
                 text = Base.texts[ln][code];
             }
         }
+
+        console.log('code: ', code, 'text: ', text);
         /**
          * If `text` has not any value, then the language( language file ) has no text for that code.
          * So, it is going to get text from English langauge file by default.
          */
         if (!text) { // if current language is `English` or the text of that language not found,
-            if (Base.texts['en'][code] !== void 0) { // get the text of the code in English
+            if (Base.texts['en'] && Base.texts['en'][code]) { // get the text of the code in English
                 text = Base.texts['en'][code];
             }
         }
@@ -331,12 +391,12 @@ export class Base {
 
     /**
      * Adds a code/text into a language that is currently chosen.
-     * @param code code to add into the language
+     * @param code code to add into the language. This is transformed to upppercase.
      * @param text text of the code
      */
     addText(code: string, text: string) {
         const ln = this.getLanguage();
-        Base.texts[ln][code] = text;
+        Base.texts[ln][code.toUpperCase()] = text;
     }
 
     /**
@@ -351,9 +411,16 @@ export class Base {
      *
      * Sets a language and loads the language file.
      *
-     * This will load JSON language file under `assets/lang` by default. You can change the path.
-     * @desc If the input `ln` is 'en', then it will just return since `en` language is loaded by typescript by default.
-     * @desc If the language is already loaded, it does not load again.
+     *
+     * @see README ## Langulage Translation for more information.
+     *
+     * @code You can load many languages. But the last one will be set as current language.
+     *
+     *          fire.loadLanguage('ko');
+     *          fire.loadLanguage('jp');
+     *          fire.setLanguage('cn')
+                    .catch( e => alert('Failed to load language file. ' + e.message) );
+     *
      *
      * @param url URL to load langauge.
      *
@@ -361,26 +428,45 @@ export class Base {
      *      a Promise of the langauge object on success.
      *      Otherwise error will be thrown.
      *
-     * @see README## Langulage Translation
-     *
-     * @code
-     *          fire.setLanguage('cn')
-                    .catch( e => alert('Failed to load language file. ' + e.message) );
-     *
      */
     setLanguage(ln: string, url?: string): Promise<any> {
         Base.language = ln;
-        if (ln === 'en') {
-            return Promise.resolve();
-        }
         if (Base.texts[ln]) {
-            return Promise.resolve();
+            // console.log(`Language file is already loaded. Does not going to load again.`);
+            this.ln = Base.texts[ln];                   /// Sets reference of current language texts. @see README
+            return Promise.resolve( Base.texts[ln] );
         }
         if (!url) {
             url = `/${Base.languageFolder}/${ln}.json`;
         }
         return this.http.get(url).toPromise()
-            .then(re => Base.texts[ln] = re);
+            .then(re => {
+                if ( re ) {
+                    const keys = Object.keys(re);
+                    if ( keys.length ) {                /// Make the case of keys uppercase. @see README.
+                        for ( const k of keys ) {
+                            const uppercase = k.toLocaleUpperCase();
+                            if ( k !== uppercase ) {
+                                re[ uppercase ] = re[ k ];
+                                delete re[k];
+                            }
+                        }
+                    }
+                }
+                Base.texts[ln] = re;
+                this.ln = Base.texts[ln];               /// Sets reference of current language texts. @see README
+                console.log(` =========== >>>>> Language ${ln} has been set.`);
+                return Base.texts[ln];
+            });
+    }
+
+    /**
+     * Aliash of setLanguage()
+     * @param ln same as setLanguage()
+     * @param url same as setLanguage()
+     */
+    loadLanguage(ln: string, url?: string): Promise<any> {
+        return this.setLanguage(ln, url);
     }
 
 

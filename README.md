@@ -9,7 +9,16 @@
 
 # TODO
 
+* `disableDeleteWithDependant` should be changed to `disableEditWithDependant`.
+  * and implement it work. If a post or a comment has a reply, then
+    author cannot change/hide/delete/move it.
+* Add 'domain' option on `FireLibrary.forRoot()` so the site can use only one domain.
+
+
 * Make a forum with chatting functionality. @see Goal
+
+* @CHECK CONSIDER To remove `language translation` from `firelibrary` since it should be not part of `Firelibrary`. Or, simple `Firelibrary` provides it since it is really necessary. like `Library as _`
+
 
 * counting likes/dislikes
  * Client does not need to get all the documents since it has backend option.
@@ -18,7 +27,9 @@
    For functions, security rule for like/dislike must be changed.
 * push notifications.
 
-* @bug realtime update is not working when there is no post. it works only after there is a post.
+* @bug realtime update is not working **when there is no post**. it works only after there is a post.
+* Like/dislike updates to slow since it waits realtime updates.
+ Solution: don't wait the realtimeupdate for the voter. Just increase/decrease after saving data into firestore.
 * @bug small. when edit, it appears as edited at first and disappears quickly when it is not the user's post. It may be the problem of `local write` in firestore.
 
 
@@ -102,9 +113,12 @@
 
 ### Conditions.
 
-* The category must have `enableLiveChat` property to true.
-* if `enableLiveChat` is set to true,
- * then, the app must get title, 255 chars of content, meta data(extra info like author, like/dislike, dates etc ),
+* The category must have `liveChatTimeout` property to time interval in seconds.
+  * For instance, 60 * 60 * 24 as a day.
+* if `liveChatTimeout` has value,
+  * it does live-chat until the liveChatTimeout 'timeouts' from 'created'.
+
+ * then, on post list display page, the app must get title, 255 chars of content, meta data(extra info like author, like/dislike, dates etc ),
   255 chars of last comment(chat).
  * And display as a post list.
  * The post list should be realtime updated.
@@ -116,11 +130,14 @@
    They have unsubscribe options.
  * Other users ( who are not chatting ) can subscribe/unsubscribe that post for updating new chat. and get immediate notifications. ( delaying push notificatio delivery is not an easy work. no good for function and cron. )
  
-* When a open is 24 hours old, then the design of the post become a normal post view unless the author set it `statusLiveChat` to `continue`
-* When the author of post set `statusLiveChat` to `close`, then the design becomes a normal post until `statusLiveChat` become `continue`.
+* When a post is older than `liveChatTimeout`,
+  then `live chat` stops. and the design of the post become a normal post view unless the author set `liveChatExpires` to until when the `live chat` continues. it's a date/time.
 
-
-
+     * by default it may be `undefined`.
+     * If author choose, to continue `live chat`,
+     *  then extend expiration for 30 days.
+     *  and author can change the expiration date by 30 days, 60 days, 6month, 1year.
+     
 
 # Sample Apps for FireLibrary
 
@@ -194,6 +211,7 @@ $ firebase deploy
 ````
 
 
+* If you create category and try to write post, it will complain in dev-tools console that you need to create `index` on firestore. Just click the link to create index.
 
 
 
@@ -249,7 +267,7 @@ Copy the source code of [regitration page on sample](https://github.com/thruthes
 
 
 
-# FireLibrary Domain
+# Domain & Multisite
 
 * Sometimes, you need to run multiple websites( or domains ) in one `Firebase Firestore`.
  For instance, you run a franchise business and you want to give a website for each branch.
@@ -261,12 +279,18 @@ Copy the source code of [regitration page on sample](https://github.com/thruthes
 
  You can change this behaviour on `settings.ts`.
 
+
 * For Mobile App, since it has no domain, you need to hard code on `settings.ts`.
  Mobile App also needs different name.
  So, If you work on building Mobile App, you may need to have a separate work space.
  You may differenciate by environment when you are building for Mobile App.
 
+## Multiple Domain but Single Database
 
+* you don't have to separate data by each domain.
+ * Just fix `domain` variable in `settings.ts` with 'database'.
+   And all data of all domain will be saved under `/fire-library/database/...`.
+   
 
 
 
@@ -503,27 +527,64 @@ service firebase.storage {
 
 ## Language Translation
 
-* By default, the language is set to English(`en`) and the text is saved in `firelibrary/etc/languages/en.ts` while other language texts are saved separately in JSON format file.
+* @since 2018-04-07. No default 'en.ts' or No default language is chosen. It's much simpler now.
+* Language files are loaded from `assets/lang` folder by default. For instance, `assets/lang/ko.json`, `assets/lang/jp.json`.
+* Language texts are saved in `Base.texts`. Hense, no need to save nowhere.
+* JOSN language files are loaded dynamically through `http.get`. So it does not affects the booting speed.
+  But since it is dynamically loaded, you may not be able to use immediately on app booting.
 
-* `en` language file is imported by default and available.
- * So, any language or language code that is not exist in other language file will use the same code in `en` language as fallback.
- * All other language text is loaded from `assets/lang` folder by default like `assets/lang/ko.json`, `assets/lang/cn.json`.
- * JOSN language files are loaded dynamically through `http.get`. So it does not affects the booting speed.
+* You may cache it. or version it to reload/refresh like `?version=load-2`
 
-* **@warning** The key of the language JSON file is case sensitive. So, becareful on the case.
+```` javascript
+this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['reloadTag'] )
+    .then(re => {}).
+    catch( e => alert(e.message) );
+````
 
 
-* It needs sometime for the JSON language files to be loaded since they are loaded asynchronously by `http.get()`.
- * If you are going to use the language file immediately before loading the language file, English language may be used in stead.
+* **@note** The key of the language JSON file is transformed to uppercase.
+ So, you can access `Base.texts[en].HOME`.
+ `fire.ln` is a reference of currenly selected language of `Base.texts`.
+ For short, you can access to `fire.ln.HOME`.
 
-* If error code should be defined in language file so it can be translated to end user.
+* Example of using language translation on template.
+
+```` HTML
+{{ fire.translate('KEY', {info: 'extra'}) }}   <!-- This calls a method -->
+{{ fire.t('KEY', {info: 'extra'}) }}  <!-- Alias of translate() -->
+{{ fire.ln.HOME }}  <!-- This access a variable. NOT method call. Prefered for speed. -->
+{{ 'HOME' | t }} <!-- PIPE -->
+````
+
+* Realtime update when changing language or loading a language on bootstrap.
+
+  * Since, language json file loaded by Async, `pipe` cannot use newly loaded language
+    Unless
+    * it move to next page ( by re-runing the pipe )
+    * or the app refreshes the site.
+  * You will need to use either `fire.t()` or `fire.ln.[CODE]` to avail the language text immediately after (asynchronously) loading.
+  * If you are going to use `fire.t()`, the template will redraw it endlessly.
+    So, it is better to use `fire.ln.[CODE]` unless you have information to add into the text.
+
+
+{{ 'Help' | t }}
+{{ a.fire.getText('help') | json }}
+
+* If you are going to use the language file immediately before loading the language file, English language may be used in stead.
+
+* Error code should be defined in language file so it can be translated to end users in their languages.
  * if there is any error that is not translated, you will see a message like `"Error code - not-found - is not translated. Please translate it. It may be firebase error."`.
 
-* You can add information on translated message. @see `Base::translate()`
+* You can add information to display with message. @see `Base::translate()`
 
-* The default English language file has minimal code to translate. You would probably want to add more. @see `test.component::language()` to know how to add more language(code/text) dynamically.
+* You can add language text dynamically. @see `test.component::language()` to know how to add more language(code/text) dynamically.
 
-* You can load a language file dynamically outsite from the app by giving URL. @see `test.component::language()` to know more about it.
+* You can load a language file outsite by giving URL. @see `test.component::language()` to know more about it.
+
+
+* If the language is already loaded, it does not load again.
+
+* Example of language file. `firelibrary/etc/languages/en.json`
 
 
 
@@ -645,3 +706,8 @@ And with that admin account, you can do admin things.
  * It is like you have steps on registration.
   Step 1. input email/password/name.
   Step 2. Upload photo.
+
+* Or, on registration page,
+ * Just get email/password and register.
+ * After that move to 'profile page' to update his profile.
+ 

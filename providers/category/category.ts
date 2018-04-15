@@ -2,7 +2,7 @@ import * as firebase from 'firebase';
 import {
     Base, _, COLLECTIONS, CATEGORY,
     CATEGORY_EXISTS, CATEGORY_DOES_NOT_EXIST, CATEGORY_CREATE, CATEGORY_GET, CATEGORY_EDIT,
-    CATEGORY_ID_EMPTY, NOT_FOUND, COLLECTION_NOT_EMPTY
+    NOT_FOUND, COLLECTION_NOT_EMPTY
 } from './../etc/base';
 export class Category extends Base {
 

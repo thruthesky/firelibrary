@@ -44,10 +44,19 @@ export class Comment extends Base {
 
 
     /**
+<<<<<<< HEAD
     * Returns a temporary comment document id.
     *
     * @return string comment document id.
     */
+=======
+     * Returns a temporary comment document id to create.
+     *
+     * Use this method when you want to create a comment.
+     *
+     * @return string comment document id.
+     */
+>>>>>>> master
     getId(): string {
         return this.collection.doc().id;
     }
