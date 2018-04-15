@@ -53,7 +53,7 @@ export interface CATEGORY {
     footerOnView?: string;
     numberOfPosts?: number;
     numberOfComment?: number;
-    liveChatTimeout?: number;
+    liveChatTimeout?: number; // value in seconds
     created?: any; ///
     updated?: any; ///
 }
@@ -186,7 +186,7 @@ export interface POST {
     subcategory?: string;           // Sub category to categorize in detail.
     tags?: string;                  // Tags to search
     displayName?: string;
-    // authorPhoto?: string;   @Deprecated - If author decides to change its profile photo we need to change all photo in his posts.
+    authorPhoto?: string;
     email?: string;
     password?: string;              // Anonymous need to put a password to update/delete.
     phoneNumber?: string;
@@ -214,7 +214,7 @@ export interface POST {
      *  then extend expiration days by 30 days.
      *  and author can change the expiration date by 30 days, 60 days, 6month, 1year.
      */
-    liveChatExpires?: number; // time value in milliseconds.
+     liveChatExpires?: number; // time value in seconds.
 }
 
 
