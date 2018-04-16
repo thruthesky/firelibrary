@@ -335,6 +335,7 @@ export class Comment extends Base {
             this.subscribeLikes(comment);
         }
     }
+
     /**
     * When listening the last post on collection in realtime, it often fires `modified` event on new docuemnt created.
     */
