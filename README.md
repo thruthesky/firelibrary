@@ -9,6 +9,17 @@
 
 # TODO
 
+* delete uploaded file when delete posts/comments.
+
+* 'fix the url' of user profile photo to `/fire-library/domain/users/profile-photo/{uid}`.
+  * So, when user is changing his profil photo, the name and url does not change. so, the profile photo will be changed on old posts.
+  * `{uid}` is actually a `file name`.
+  * `thumb_{uid}` is the `thumbnail file name` of profile photo.
+
+* Update firebase functions to v1.0
+  * [Firebase 1.0 Update](https://firebase.google.com/docs/functions/beta-v1-diff)
+
+
 * `disableDeleteWithDependant` should be changed to `disableEditWithDependant`.
   * and implement it work. If a post or a comment has a reply, then
     author cannot change/hide/delete/move it.
@@ -541,9 +552,8 @@ this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['relo
     catch( e => alert(e.message) );
 ````
 
-
 * **@note** The key of the language JSON file is transformed to uppercase.
- So, you can access `Base.texts[en].HOME`.
+ So, you can access `Base.texts[en].HOME` even though it is stated as `home` in en.json file.
  `fire.ln` is a reference of currenly selected language of `Base.texts`.
  For short, you can access to `fire.ln.HOME`.
 
@@ -560,8 +570,14 @@ this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['relo
 
   * Since, language json file loaded by Async, `pipe` cannot use newly loaded language
     Unless
-    * it move to next page ( by re-runing the pipe )
+    * it move to next page ( by re-runing the pipe ). You can do some trick here. Move to home page or another page after 1 seconds when user changes language.
     * or the app refreshes the site.
+  * One solution for realtime update with pipe is that,
+    * use `fire.ln.[CODE]` for texts that is not being re-redraw like 'header', 'footer', or anyting outside `<router-outlet>`.
+    * And make a separate page for language change and if user changes language,
+      wait for it loads that langauage( it's a promise call and you can wait ),
+      and move to another page or 
+
   * You will need to use either `fire.t()` or `fire.ln.[CODE]` to avail the language text immediately after (asynchronously) loading.
   * If you are going to use `fire.t()`, the template will redraw it endlessly.
     So, it is better to use `fire.ln.[CODE]` unless you have information to add into the text.
@@ -647,6 +663,26 @@ When there are things to sanitize, it is one good idea to make a separate method
 
 * When there is no comments belong to the post, the post may be moved into `posts-trash` collection.
 
+### New Post subscription
+
+```` typescript
+    fire.post.created.subscribe( (post: POST) => {
+      console.log('post created subscription: ', post);
+    });
+
+````
+
+### New Comment subscription
+
+```` typescript
+    /**
+     * If you put it in comment component, it will be called many times since you are subscribing many times.
+     * Try to put it somewhere like post list page or app component if you want it to be called only one time.
+     */
+    fire.comment.created.subscribe( (comment) => {
+      console.log('comment created subscription: ', comment);
+    });
+````
 
 
 
