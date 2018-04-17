@@ -1,3 +1,4 @@
+import { EventEmitter } from '@angular/core';
 import {
     Base, _,
     COLLECTIONS,
@@ -28,6 +29,7 @@ export class Comment extends Base {
     */
     commentIds: { [postId: string]: Array<string> } = {};
 
+    event = new EventEmitter;
 
     /**
     * Subscribes and unsubscribes comment's likes/dislike/changes by post.
@@ -333,6 +335,7 @@ export class Comment extends Base {
             this.sortComments(postId, comment);
             this.subscribeCommentChange(postId, comment);
             this.subscribeLikes(comment);
+            this.event.emit('insert');
         }
     }
 
