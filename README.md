@@ -9,6 +9,15 @@
 
 # TODO
 
+* delete uploaded file when delete posts/comments.
+
+* 'fix the url' of user profile photo to `/fire-library/domain/users/profile-photo/{uid}`.
+  * So, when user is changing his profil photo, the name and url does not change. so, the profile photo will be changed on old posts.
+  * `{uid}` is actually a `file name`.
+  * `thumb_{uid}` is the `thumbnail file name` of profile photo.
+
+
+
 * `disableDeleteWithDependant` should be changed to `disableEditWithDependant`.
   * and implement it work. If a post or a comment has a reply, then
     author cannot change/hide/delete/move it.
