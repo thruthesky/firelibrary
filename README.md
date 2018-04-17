@@ -16,6 +16,8 @@
   * `{uid}` is actually a `file name`.
   * `thumb_{uid}` is the `thumbnail file name` of profile photo.
 
+* Update firebase functions to v1.0
+  * [Firebase 1.0 Update](https://firebase.google.com/docs/functions/beta-v1-diff)
 
 
 * `disableDeleteWithDependant` should be changed to `disableEditWithDependant`.
@@ -544,19 +546,45 @@ service firebase.storage {
 
 * You may cache it. or version it to reload/refresh like `?version=load-2`
 
+```` javascript
+this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['reloadTag'] )
+    .then(re => {}).
+    catch( e => alert(e.message) );
+````
 
 * **@note** The key of the language JSON file is transformed to uppercase.
- So, you can access `Base.texts[en].HOME`.
+ So, you can access `Base.texts[en].HOME` even though it is stated as `home` in en.json file.
  `fire.ln` is a reference of currenly selected language of `Base.texts`.
  For short, you can access to `fire.ln.HOME`.
 
 * Example of using language translation on template.
 
-````
+```` HTML
 {{ fire.translate('KEY', {info: 'extra'}) }}   <!-- This calls a method -->
 {{ fire.t('KEY', {info: 'extra'}) }}  <!-- Alias of translate() -->
 {{ fire.ln.HOME }}  <!-- This access a variable. NOT method call. Prefered for speed. -->
+{{ 'HOME' | t }} <!-- PIPE -->
 ````
+
+* Realtime update when changing language or loading a language on bootstrap.
+
+  * Since, language json file loaded by Async, `pipe` cannot use newly loaded language
+    Unless
+    * it move to next page ( by re-runing the pipe ). You can do some trick here. Move to home page or another page after 1 seconds when user changes language.
+    * or the app refreshes the site.
+  * One solution for realtime update with pipe is that,
+    * use `fire.ln.[CODE]` for texts that is not being re-redraw like 'header', 'footer', or anyting outside `<router-outlet>`.
+    * And make a separate page for language change and if user changes language,
+      wait for it loads that langauage( it's a promise call and you can wait ),
+      and move to another page or 
+
+  * You will need to use either `fire.t()` or `fire.ln.[CODE]` to avail the language text immediately after (asynchronously) loading.
+  * If you are going to use `fire.t()`, the template will redraw it endlessly.
+    So, it is better to use `fire.ln.[CODE]` unless you have information to add into the text.
+
+
+{{ 'Help' | t }}
+{{ a.fire.getText('help') | json }}
 
 * If you are going to use the language file immediately before loading the language file, English language may be used in stead.
 

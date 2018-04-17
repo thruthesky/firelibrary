@@ -257,7 +257,7 @@ export class Base {
      */
     isFirebaseError(e, info): boolean {
         // console.log('error: ', e.code, e.message);
-        if ( e.code ) {
+        if (e.code) {
             e.code = (<string>e.code).toUpperCase();
         }
         // console.log('e.code: ', e.code);
@@ -308,9 +308,9 @@ export class Base {
                 this.test(e.code === PERMISSION_DENIED, 'User has not logged in', e.code, e, e.info);
             });
      */
-    convertFirebaseError( e ) {
+    convertFirebaseError(e) {
         const info = {};
-        if ( this.isFirebaseError( e, info ) ) {
+        if (this.isFirebaseError(e, info)) {
             this.translateFirebaseError(e, info);
             e['info'] = info;
         }
@@ -327,7 +327,7 @@ export class Base {
      *          {{ fire.ln.HOME }}
      */
     translate(code: string, info?): string {
-        return _.patchMarker(this.getText(code.toUpperCase()), info);
+        return _.patchMarker(this.getText(code), info);
     }
 
     /**
@@ -336,6 +336,7 @@ export class Base {
      * @param info same as transate()
      */
     t(code: any, info?: any): string {
+        // console.log('code', code);
         return this.translate(code, info);
     }
 
@@ -345,11 +346,23 @@ export class Base {
      * It does not translates. Meaning it does not add `information` to the result text. It simply returns.
      * If the language is not `en`, then it gets the text of the language.
      *
+     * @param code code. The code will be transformed to uppercase.
+     *
      * @returns text of that code.
      *      - if the code does not exist on text file, then it returns the code itself.
+     *
+     *      - if `code` is falsy, it returns the whole texts of the language.
+     *
+     * @example How to display texts on template
+     *          {{ fire.getText() | json }}
      */
-    getText(code: any): string {
+    getText(code: string): string {
         const ln = this.getLanguage();
+        if (!code) {
+            return Base.texts[ln];
+        }
+        code = code.toUpperCase();
+
         /**
          * `text` should hold the text of the language code.
          */
@@ -359,6 +372,8 @@ export class Base {
                 text = Base.texts[ln][code];
             }
         }
+
+        // console.log('code: ', code, 'text: ', text);
         /**
          * If `text` has not any value, then the language( language file ) has no text for that code.
          * So, it is going to get text from English langauge file by default.
@@ -418,21 +433,22 @@ export class Base {
         Base.language = ln;
         if (Base.texts[ln]) {
             // console.log(`Language file is already loaded. Does not going to load again.`);
-            this.ln = Base.texts[ln];                   /// Sets reference of current language texts. @see README
-            return Promise.resolve( Base.texts[ln] );
+            this.ln = Base.texts[ln];
+            // this.ln = Object.assign(this.ln, Base.texts[ln]);                   /// Sets reference of current language texts. @see README
+            return Promise.resolve(Base.texts[ln]);
         }
         if (!url) {
             url = `/${Base.languageFolder}/${ln}.json`;
         }
         return this.http.get(url).toPromise()
             .then(re => {
-                if ( re ) {
+                if (re) {
                     const keys = Object.keys(re);
-                    if ( keys.length ) {                /// Make the case of keys uppercase. @see README.
-                        for ( const k of keys ) {
+                    if (keys.length) {                /// Make the case of keys uppercase. @see README.
+                        for (const k of keys) {
                             const uppercase = k.toLocaleUpperCase();
-                            if ( k !== uppercase ) {
-                                re[ uppercase ] = re[ k ];
+                            if (k !== uppercase) {
+                                re[uppercase] = re[k];
                                 delete re[k];
                             }
                         }
@@ -440,6 +456,7 @@ export class Base {
                 }
                 Base.texts[ln] = re;
                 this.ln = Base.texts[ln];               /// Sets reference of current language texts. @see README
+                // console.log(` =========== >>>>> Language ${ln} has been set.`);
                 return Base.texts[ln];
             });
     }
