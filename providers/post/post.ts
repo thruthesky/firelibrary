@@ -14,6 +14,7 @@ import {
 } from './../etc/base';
 import { User } from '../user/user';
 import * as firebase from 'firebase';
+import { EventEmitter } from '@angular/core';
 export class Post extends Base {
 
     /**
@@ -56,6 +57,17 @@ export class Post extends Base {
     private _unsubscribeLikes = [];
     private _unsubscribePosts = [];
     private unsubscribePage = null;
+
+
+    /**
+     * Event emitters for post CRUD.
+     * We only support for `created` event due to `onSnapShot()` listening problem.
+     * @see https://docs.google.com/document/d/1r2YlX3C9Q0ieUS4v1mkuzNXd0FAoB9Jl69fNFH-O1VM/edit#heading=h.ir4gnj6g3ofv
+     * When you create, remove event fires on listening `collection`.
+     */
+    created = new EventEmitter<POST>();
+    // updated = new EventEmitter<POST>();
+    // deleted = new EventEmitter<POST>();
 
     constructor(
     ) {
@@ -127,6 +139,8 @@ export class Post extends Base {
      * @returns Pushed `data` with Document ID if success.
      *
      * @since 2018-03-16 Category.numberOfPosts were removed. @see README## Client Side Coding Limitation and PUBLIC META DATA
+     *
+     *
      */
     create(post: POST): Promise<POST_CREATE> {
         const id = post.id;
@@ -191,8 +205,8 @@ export class Post extends Base {
                 _.sanitize(post);
                 post.updated = firebase.firestore.FieldValue.serverTimestamp();
                 const ref = this.collection.doc(post.id);
-                console.log('update at: ', ref.path);
-                console.log('update post: ', post.id);
+                // console.log('update at: ', ref.path);
+                // console.log('update post: ', post.id);
                 return ref.update(post);
             })
             .then(() => {
@@ -427,14 +441,14 @@ export class Post extends Base {
                 const doc = change.doc;
                 if (doc.metadata.hasPendingWrites) {
 
-                    console.log('pending', doc.metadata.hasPendingWrites, 'from cache: ', doc.metadata.fromCache);
+                    // console.log('pending', doc.metadata.hasPendingWrites, 'from cache: ', doc.metadata.fromCache);
 
                 } else {
-                    console.log('pending', doc.metadata.hasPendingWrites, 'type: ', change.type,
-                        'from cache: ', doc.metadata.fromCache, doc.data());
+                    // console.log('pending', doc.metadata.hasPendingWrites, 'type: ', change.type,
+                        // 'from cache: ', doc.metadata.fromCache, doc.data());
                     const post: POST = doc.data();
                     post.id = doc.id;
-                    console.log(`exists: ${this.pagePosts[post.id]}`);
+                    // console.log(`exists: ${this.pagePosts[post.id]}`);
                     if (change.type === 'added' && this.pagePosts[post.id] === void 0) {
                         this.addPostOnTop(post);
                     } else if (change.type === 'modified') {
@@ -460,21 +474,23 @@ export class Post extends Base {
     */
     private addPostOnTop(post: POST) {
         if (this.pagePosts[post.id] === void 0) {
-            console.log(`addPostOnTop: `, post);
+            // console.log(`addPostOnTop: `, post);
             this.pagePosts[post.id] = post;
             this.pagePostIds.unshift(post.id);
             this.subscribePostChange(post);
             this.subscribeLikes(post);
+            this.created.emit(post);
         }
     }
     /**
     * When listening the last post on collection in realtime, it often fires `modified` event on new docuemnt created.
     */
     private updatePost(post: POST) {
-        console.log('updatePost id: ', post.id);
+        // console.log('updatePost id: ', post.id);
         if (this.pagePosts[post.id]) {
-            console.log(`updatePost`, post);
+            // console.log(`updatePost`, post);
             this.pagePosts[post.id] = Object.assign(this.pagePosts[post.id], post);
+            // this.updated.emit(post);
         } else {
             this.addPostOnTop(post);
         }
@@ -485,6 +501,7 @@ export class Post extends Base {
     * @deprecated @see README### No post delete.
     */
     private removePost(post: POST) {
+        // this.deleted.emit(post);
         // if (this.pagePosts[post.id]) {
         //     console.log(`deletePost`, post);
         //     this.pagePosts[post.id].title = 'deleted???';

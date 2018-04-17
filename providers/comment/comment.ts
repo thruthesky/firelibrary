@@ -13,6 +13,7 @@ import {
 } from './../etc/base';
 import { User } from '../user/user';
 import * as firebase from 'firebase';
+import { EventEmitter } from '@angular/core';
 export class Comment extends Base {
 
     private user: User;
@@ -36,6 +37,17 @@ export class Comment extends Base {
      */
     private _unsubscribeLikes: { [postId: string]: Array<any> } = {};
     private _unsubscribeComments: { [postId: string]: Array<any> } = {};
+
+
+    /**
+     * Event emitters for comment CRUD.
+     * We only support for `created` event due to `onSnapShot()` listening problem.
+     * @see https://docs.google.com/document/d/1r2YlX3C9Q0ieUS4v1mkuzNXd0FAoB9Jl69fNFH-O1VM/edit#heading=h.ir4gnj6g3ofv
+     * When you create, remove event fires on listening `collection`.
+     */
+    created = new EventEmitter<COMMENT>();
+    // updated = new EventEmitter<POST>();
+    // deleted = new EventEmitter<POST>();
     constructor(
     ) {
         super(COLLECTIONS.COMMENTS);
@@ -161,12 +173,12 @@ export class Comment extends Base {
      * @param postId Post Document ID
      */
     sortComments(postId: string, comment: COMMENT) {
-        console.log(`sortComment for: `, postId, comment);
+        // console.log(`sortComment for: `, postId, comment);
         if (this.commentIds[postId] === void 0) {
             this.commentIds[postId] = [];
         }
         const pos = this.commentIds[postId].findIndex(id => id === comment.parentId);
-        console.log('pos: ', pos);
+        // console.log('pos: ', pos);
         if (pos === - 1) {
             this.commentIds[postId].push(comment.id);
         } else {
@@ -197,7 +209,7 @@ export class Comment extends Base {
             comment.depth = 0;
         }
         const ref = this.commentCollection(comment.postId);
-        console.log(`Going to add a comment under: ${ref.path}`);
+        // console.log(`Going to add a comment under: ${ref.path}`);
 
         const id = comment.id;
         delete comment.id;
@@ -206,7 +218,7 @@ export class Comment extends Base {
                 return this.success({ id: id });
             })
             .catch(e => {
-                console.log(`failed: `, e);
+                // console.log(`failed: `, e);
                 return this.failure(e);
             });
     }
@@ -227,7 +239,7 @@ export class Comment extends Base {
         const commentId = comment.id;
         this.editSanitizer(comment);
         const ref = this.comment(comment.postId, commentId);
-        console.log(`Going to edit : ${ref.path} with `, comment);
+        // console.log(`Going to edit : ${ref.path} with `, comment);
         return ref.update(comment).then(() => {
             return this.success({ id: commentId });
         })
@@ -285,17 +297,17 @@ export class Comment extends Base {
             return;
         }
         const path = this.commentCollection(postId).path;
-        console.log(`watch for new comment: ${path}`);
+        // console.log(`watch for new comment: ${path}`);
         const unsubscribe = this.commentCollection(postId).orderBy('created', 'desc').limit(1).onSnapshot(snapshot => {
 
-            console.log('watch the lastest comment: ');
+            // console.log('watch the lastest comment: ');
             snapshot.docChanges.forEach(change => {
                 const doc = change.doc;
                 if (doc.metadata.hasPendingWrites) {
-                    console.log('pending', doc.metadata.hasPendingWrites, 'from cache: ', doc.metadata.fromCache);
+                    // console.log('pending', doc.metadata.hasPendingWrites, 'from cache: ', doc.metadata.fromCache);
                 } else {
-                    console.log('pending', doc.metadata.hasPendingWrites, 'type: ', change.type,
-                        'from cache: ', doc.metadata.fromCache, doc.data());
+                    // console.log('pending', doc.metadata.hasPendingWrites, 'type: ', change.type,
+                    //     'from cache: ', doc.metadata.fromCache, doc.data());
                     const comment: COMMENT = doc.data();
                     comment.id = doc.id;
                     // console.log(`exists: ${this.pagePosts[post.id]}`);
@@ -328,21 +340,23 @@ export class Comment extends Base {
      */
     private insertComment(postId, comment: COMMENT) {
         if (this.comments[comment.id] === void 0) {
-            console.log(`insertComment: `, comment);
+            // console.log(`insertComment: `, comment);
             this.comments[comment.id] = comment;
             this.sortComments(postId, comment);
             this.subscribeCommentChange(postId, comment);
             this.subscribeLikes(comment);
+            this.created.emit(comment);
         }
     }
     /**
      * When listening the last post on collection in realtime, it often fires `modified` event on new docuemnt created.
      */
     private updateComment(postId, comment: COMMENT) {
-        console.log('updateComment id: ', comment.id);
+        // console.log('updateComment id: ', comment.id);
         if (this.comments[comment.id]) {
-            console.log(`updateComment`, comment);
+            // console.log(`updateComment`, comment);
             this.comments[comment.id] = Object.assign(this.comments[comment.id], comment);
+            // this.updated.emit(comment);
         } else {
             this.insertComment(postId, comment);
         }
@@ -353,6 +367,7 @@ export class Comment extends Base {
      * @deprecated @see README### No post delete.
      */
     private removeComment(comment: COMMENT) {
+        // this.deleted.emit(comment);
     }
 
 
@@ -417,7 +432,7 @@ export class Comment extends Base {
      *      or anywhere you want to destroy the comments that belong to the post.
      */
     destory(post: POST) {
-        console.log(`Going to destroy comments for post.id: `, post.id);
+        // console.log(`Going to destroy comments for post.id: `, post.id);
         this.unsubscribes(post.id);
     }
 

@@ -663,6 +663,26 @@ When there are things to sanitize, it is one good idea to make a separate method
 
 * When there is no comments belong to the post, the post may be moved into `posts-trash` collection.
 
+### New Post subscription
+
+```` typescript
+    fire.post.created.subscribe( (post: POST) => {
+      console.log('post created subscription: ', post);
+    });
+
+````
+
+### New Comment subscription
+
+```` typescript
+    /**
+     * If you put it in comment component, it will be called many times since you are subscribing many times.
+     * Try to put it somewhere like post list page or app component if you want it to be called only one time.
+     */
+    fire.comment.created.subscribe( (comment) => {
+      console.log('comment created subscription: ', comment);
+    });
+````
 
 
 
