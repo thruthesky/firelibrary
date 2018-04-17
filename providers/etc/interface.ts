@@ -214,7 +214,7 @@ export interface POST {
      *  then extend expiration days by 30 days.
      *  and author can change the expiration date by 30 days, 60 days, 6month, 1year.
      */
-     liveChatExpires?: number; // time value in seconds.
+     liveChatExpires?: string;
 }
 
 
