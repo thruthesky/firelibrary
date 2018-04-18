@@ -29,8 +29,6 @@ export class Comment extends Base {
     */
     commentIds: { [postId: string]: Array<string> } = {};
 
-    event = new EventEmitter;
-
     /**
     * Subscribes and unsubscribes comment's likes/dislike/changes by post.
     * This is because in some cases, only few posts may be destroyed from page and
@@ -47,7 +45,7 @@ export class Comment extends Base {
      * When you create, remove event fires on listening `collection`.
      */
     created = new EventEmitter<COMMENT>();
-    // updated = new EventEmitter<POST>();
+    updated = new EventEmitter<COMMENT>();
     // deleted = new EventEmitter<POST>();
     constructor(
     ) {
@@ -358,6 +356,7 @@ export class Comment extends Base {
         if (this.comments[comment.id]) {
             // console.log(`updateComment`, comment);
             this.comments[comment.id] = Object.assign(this.comments[comment.id], comment);
+            this.updated.emit(comment);
             // this.updated.emit(comment);
         } else {
             this.insertComment(postId, comment);
