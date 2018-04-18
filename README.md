@@ -658,7 +658,7 @@ When there are things to sanitize, it is one good idea to make a separate method
 ### No post delete.
 
 * When user clicks on delete button to delete the post, firelibrary does not actually delete the post.
-  Instead, it marks as deleted.
+  Instead, **it is marked as deleted**.
   * Reasion. There might be comments that belongs to the post. And we consider it is not the poster's previlledge to delete all the comments which are belonging to the comment writers. They shouldn't be disappears only because the poster deleted his post. The comments should be still shown.
 
 * When there is no comments belong to the post, the post may be moved into `posts-trash` collection.
