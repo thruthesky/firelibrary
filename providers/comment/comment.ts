@@ -45,7 +45,7 @@ export class Comment extends Base {
      * When you create, remove event fires on listening `collection`.
      */
     created = new EventEmitter<COMMENT>();
-    updated = new EventEmitter<POST>();
+    updated = new EventEmitter<COMMENT>();
     // deleted = new EventEmitter<POST>();
     constructor(
     ) {
