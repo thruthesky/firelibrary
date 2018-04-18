@@ -356,7 +356,7 @@ export class Base {
      * @example How to display texts on template
      *          {{ fire.getText() | json }}
      */
-    getText(code: string): string {
+    getText(code?: string): string {
         const ln = this.getLanguage();
         if (!code) {
             return Base.texts[ln];

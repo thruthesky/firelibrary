@@ -8,7 +8,7 @@
  /**
   * Get domain from web browser.
   */
-let domain: string = 'localhost';
+let domain = 'localhost';
 if (window.location && window.location.hostname) {
     domain = window.location.hostname;
 }
