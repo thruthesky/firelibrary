@@ -206,6 +206,40 @@ export class User extends Base {
             .catch(e => this.failure(e));
         // .catch( e => e );
     }
+
+    /**
+     * You can use this method to let the user login as anonymously.
+     *
+     * It is better to let user login as anonymous only when the user has not logged in yet.
+     * To do this, listen for onAuthStateChanged() and if the user has not logged in,
+     * then, use this method to let the user loign as anonymous.
+     *
+     * Once you call it, it will always login as anonymous when the user is not logged in.
+     *  1. if the user has not logged in.
+     *  2. if the user logged out.
+     *  3. if the user has logged in,
+     *      it will not logged in as anonymous.
+     *      but when the user logs out, it will login as anonymous.
+     */
+    loginAnonymously() {
+        this.auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in.
+                if (user.isAnonymous) {
+                    console.log('loginAnonymously() ==> User has logged in as anonymous with uid: ', user.uid);
+                } else {
+                    console.log('loginAnonymously() ==> User has logged in. UID: ', user.uid);
+                }
+            } else {
+                console.log('loginAnonymously() ==> User is not logged in yet. Going to login as anonymous.');
+                this.auth.signInAnonymously().catch(e => {
+                    const errorCode = e.code;
+                    const errorMessage = e.message;
+                    alert(`Failed to login anonymous. Error code: ${errorCode}, message: ${errorMessage}`);
+                });
+            }
+        });
+    }
     /**
     * Logout user.
     */
@@ -245,7 +279,7 @@ export class User extends Base {
         if (!this.uid) {
             return this.failure(USER_IS_NOT_LOGGED_IN);
         }
-        data = _.sanitize( data );
+        data = _.sanitize(data);
         data.uid = this.uid;
         delete data.password;
         data.created = firebase.firestore.FieldValue.serverTimestamp();

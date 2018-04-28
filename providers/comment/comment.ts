@@ -201,7 +201,12 @@ export class Comment extends Base {
         }
         _.sanitize(comment);
         comment.uid = this.user.uid;
-        comment.displayName = this.user.displayName;
+        /**
+         * @fix 2018-04-28. the parameter `comment.displayName` may has value already.
+         */
+        if ( ! comment.displayName ) {
+            comment.displayName = this.user.displayName;
+        }
         comment.created = firebase.firestore.FieldValue.serverTimestamp();
         if (comment.parentId) {
             comment.depth = this.getComment(comment.parentId).depth + 1;

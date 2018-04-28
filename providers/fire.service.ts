@@ -41,7 +41,9 @@ export class FireService extends Base {
   }
 
   initUser() {
+    console.log(`initUser(): `);
     firebase.auth().onAuthStateChanged((user: firebase.User) => {
+      console.log(`FireService::initUsers() => firebase.auth().onAuthStateChanged( ... )`);
       this.ngZone.run(x => { });     /// refresh the view if state changes.
       if (user) {
         // console.log('user signed in');
