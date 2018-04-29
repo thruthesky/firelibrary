@@ -731,19 +731,26 @@ And with that admin account, you can do admin things.
  * for files - `temp/storage/thumbnails/fire-library/{domain}/{user-uid}/{post-document-id}/{file}/{created: time}`
  * for comments - `temp/storage/thumbnails/fire-library/{domain}/{user-uid}/{post-document-id}/comments/{comment-document-id}/{file}/{created: time}`.
 
-
 ## Registration Page
-
 
 * Users need to sign in first before going to upload a photo since user `uid` is required to upload a photo.
 * If you are going to let users to upload profile photo on registration page,
  you will need to get email/password first and register into `firebase user authentication`.
  And then let the user to upload profile photo with the `firebase uid`.
- * It is like you have steps on registration.
+  * It is like you have steps on registration.
   Step 1. input email/password/name.
   Step 2. Upload photo.
 
 * Or, on registration page,
- * Just get email/password and register.
- * After that move to 'profile page' to update his profile.
- 
+  * Just get email/password and register.
+  * After that move to 'profile page' to update his profile.
+
+## Known Problem. Bugs. Issues.
+
+* When we try to edit posts data in `then` callback after loading a page, the changes are rollback to the original data.
+
+```` typescript
+this.fire.post.page({ category: category, limit: 5 }).then(posts => { ... changes here disappears ... })
+````
+
+So we did it on template.
