@@ -1,13 +1,12 @@
 # Firebase CMS Library
 
 * It is a library to build CMS with `Firebase`.
- * It uses firebase Authentication, Firestore database, Storage, etc.
+  * It uses firebase Authentication, Firestore database, Storage, etc.
 
 * This library is developped as a module for Angular and Ionic.
   If you want to use it other framework, you will need to edit since other framework is different from Angular which has Module system and Dependency Injection, etc.
 
-
-# TODO
+## TODO
 
 * delete uploaded file when delete posts/comments.
 
@@ -19,22 +18,19 @@
 * Update firebase functions to v1.0
   * [Firebase 1.0 Update](https://firebase.google.com/docs/functions/beta-v1-diff)
 
-
 * `disableDeleteWithDependant` should be changed to `disableEditWithDependant`.
   * and implement it work. If a post or a comment has a reply, then
     author cannot change/hide/delete/move it.
 * Add 'domain' option on `FireLibrary.forRoot()` so the site can use only one domain.
 
-
 * Make a forum with chatting functionality. @see Goal
 
 * @CHECK CONSIDER To remove `language translation` from `firelibrary` since it should be not part of `Firelibrary`. Or, simple `Firelibrary` provides it since it is really necessary. like `Library as _`
 
-
 * counting likes/dislikes
- * Client does not need to get all the documents since it has backend option.
+  * Client does not need to get all the documents since it has backend option.
    so, simple add/deduct 1.
- * Functions does not need to get all the documents since it is safe.
+  * Functions does not need to get all the documents since it is safe.
    For functions, security rule for like/dislike must be changed.
 * push notifications.
 
@@ -43,131 +39,113 @@
  Solution: don't wait the realtimeupdate for the voter. Just increase/decrease after saving data into firestore.
 * @bug small. when edit, it appears as edited at first and disappears quickly when it is not the user's post. It may be the problem of `local write` in firestore.
 
-
 * delete uploaded files when post/comment is deleted.
 * delete thumbnails.
 
 * Admin dashboard.
- * installation page.
-  * If /settings/admin does not exist, you can install(put your email as admin).
+  * installation page.
+    * If /settings/admin does not exist, you can install(put your email as admin).
 
 * check post's uid on creation. a user may put another user's uid on post and that can cause a problem
 
 * file upload
- * if a file uploaded successfully,
+  * if a file uploaded successfully,
     the file's metadata will have `success: true`.
     Without it, the file is not uploaded. The user may stop posting after uploading.
- * all files without `success: true` must be deleted some time laster.
-
+  * all files without `success: true` must be deleted some time laster.
 
 * Functions options
- * git repo: https://github.com/thruthesky/firelibrary-functions
- * @see functions code https://github.com/firebase/functions-samples
- * Counting comment, likes/dislikes, counting numberOfPosts, numberOfComments.
- * Push notificaton.
-  * User can have options. push on reply.
-
+  * git repo: https://github.com/thruthesky/firelibrary-functions
+  * @see functions code https://github.com/firebase/functions-samples
+  * Counting comment, likes/dislikes, counting numberOfPosts, numberOfComments.
+  * Push notificaton.
+    * User can have options. push on reply.
 
 * Unit test
- * @done (Not much to do) Produce all the errors of https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreError
-
-   *  emtpy category id
-   *  wrong category id: with slash, space, dot, other specail chars.
-   *  too long category id
-   *  too short category id
-   *  category id with existing
-   *  category id with
-   *  empty category data
-   *  too big category data. over 1M. ( this is not easy to test. )
- * Unit test on creating category with admin permission.
+  * @done (Not much to do) Produce all the errors of        https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreError
+  * emtpy category id
+  * wrong category id: with slash, space, dot, other specail chars.
+  * too long category id
+  * too short category id
+  * category id with existing
+  * category id with
+  * empty category data
+  * too big category data. over 1M. ( this is not easy to test. )
+  * Unit test on creating category with admin permission.
 * user update with email/password login.
 * Authentication social login and profile update.
 * resign.
 * User profile photo update.
- * Check if `photoURL` is erased every login. then `photoURL` should be saved in `users` collection.
+  * Check if `photoURL` is erased every login. then `photoURL` should be saved in `users` collection.
 * Update rules
 
 * Create posts under `posts` collection.
- * Anonymous can post with `Firebase Authentication Anonymous Login`
+  * Anonymous can post with `Firebase Authentication Anonymous Login`
 
 * Rule update
- * Check query data to meet condition.
-  * When a user create a post, categoryId must exist in categories collection.
+  * Check query data to meet condition.
+    * When a user create a post, categoryId must exist in categories collection.
 
 * Storage rules. Limit file size upto 32M.
 
-
 * Cleaning tool for deleted posts.
 
-
-# Terms
+## Terms
 
 * `We` means the core developers.
 * `You` means the ones who are using this `FireLibrary`.
 * `Action Methods` are defined in providers and are handling/manipulating with `Firebase`.
- * Some of `Action Methods` are `Category::create()`, `Category::edit()`, etc.
+  * Some of `Action Methods` are `Category::create()`, `Category::edit()`, etc.
 
+## Goal
 
-
-
-# Goal
-
-## Chat Forum
+### Chat Forum
 
 * To make a forum with chatting functionality.
- * Person A post a question.
- * Person B answers.
- * 'A' gets push notification and view the answer and replies immedately.
- * Realtime chat begins between 'A' and 'B' on the post
-  * and the comments will be open to public since it is merely a comments.
+  * Person A post a question.
+  * Person B answers.
+  * 'A' gets push notification and view the answer and replies immedately.
+  * Realtime chat begins between 'A' and 'B' on the post
+    * and the comments will be open to public since it is merely a comments.
 
-
-### Conditions.
+### Conditions
 
 * The category must have `liveChatTimeout` property to time interval in seconds.
-  * For instance, 60 * 60 * 24 as a day.
+  * For instance, `60 * 60 * 24` as a day.
 * if `liveChatTimeout` has value,
   * it does live-chat until the liveChatTimeout 'timeouts' from 'created'.
 
- * then, on post list display page, the app must get title, 255 chars of content, meta data(extra info like author, like/dislike, dates etc ),
+  * then, on post list display page, the app must get title, 255 chars of content, meta data(extra info like author, like/dislike, dates etc ),
   255 chars of last comment(chat).
- * And display as a post list.
- * The post list should be realtime updated.
+  * And display as a post list.
+  * The post list should be realtime updated.
 * When a post is clicked,
- * A chat room will be opened.
- * And users who are viewing the post are actually chatting in a chatting room.
- * All the chat must be saved as the comment of the post.
- * Users who have chatted in that post(chat room), will automatically have subscription and get notification immediately when other user chats.
+  * A chat room will be opened.
+  * And users who are viewing the post are actually chatting in a chatting room.
+  * All the chat must be saved as the comment of the post.
+  * Users who have chatted in that post(chat room), will automatically have subscription and get notification immediately when other user chats.
    They have unsubscribe options.
- * Other users ( who are not chatting ) can subscribe/unsubscribe that post for updating new chat. and get immediate notifications. ( delaying push notificatio delivery is not an easy work. no good for function and cron. )
+  * Other users ( who are not chatting ) can subscribe/unsubscribe that post for updating new chat. and get immediate notifications. ( delaying push notificatio delivery is not an easy work. no good for function and cron. )
  
 * When a post is older than `liveChatTimeout`,
   then `live chat` stops. and the design of the post become a normal post view unless the author set `liveChatExpires` to until when the `live chat` continues. it's a date/time.
+  * by default it may be `undefined`.
+  * If author choose, to continue `live chat`,
+  * then extend expiration for 30 days.
+  * and author can change the expiration date by 30 days, 60 days, 6month, 1year.
 
-     * by default it may be `undefined`.
-     * If author choose, to continue `live chat`,
-     *  then extend expiration for 30 days.
-     *  and author can change the expiration date by 30 days, 60 days, 6month, 1year.
-     
-
-# Sample Apps for FireLibrary
-
+## Sample Apps for FireLibrary
 
 * Recommend to see [FireLibrary Sample App](https://github.com/thruthesky/firelibrary-app) which demonstrates the full functionality of `FireLibrary`. It even has unit tests.
 
-
 * See [Ionic v4 - Site App](https://github.com/thruthesky/site/tree/init-firelibrary) `init-firelibrary` branch for the basic code.
- * It uses Ionic v4 and does lazy loading.
- * It added
-   * `FireLibrary` on App Module.
-   * `Registration` Page.
-   * `Installation` Page.
+  * It uses Ionic v4 and does lazy loading.
+  * It added
+    * `FireLibrary` on App Module.
+    * `Registration` Page.
+    * `Installation` Page.
 
- 
-
-
-
-# Installation
+## Installation
 
 
 ## FireLibrary Installation
@@ -221,18 +199,22 @@ $ cd ..
 $ firebase deploy
 ````
 
-
 * If you create category and try to write post, it will complain in dev-tools console that you need to create `index` on firestore. Just click the link to create index.
 
+## Examples
 
+* We have a good example of forum theme. @see
+  * [Site forum page](https://github.com/thruthesky/site/tree/44f2819c6ab33e0669843a392adb9b3e38bf3aec/src/app/pages/forum)
+  * [Site comment component](https://github.com/thruthesky/site/tree/44f2819c6ab33e0669843a392adb9b3e38bf3aec/src/app/components/comment)
+  * and [Site data component](https://github.com/thruthesky/site/tree/44f2819c6ab33e0669843a392adb9b3e38bf3aec/src/app/components/data)
 
 ## Default Code
 
-### Importing FireLibrary.
+### Importing FireLibrary
 
 * Add the following in `app.modules.ts`
 
-````
+```` typescript
 import { FireService, FirelibraryModule } from './modules/firelibrary/core';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
@@ -263,33 +245,26 @@ export class AppModule { }
 
 Copy the source code of [regitration page on sample](https://github.com/thruthesky/firelibrary-app/tree/master/src/app/components/register) app.
 
-
-
 ### Installation Page
 
 * After coding registration page and register/login, You will need to code for Installation page.
 * Each domain has its own admin. See `FireLibrary Domain`.
 
-
-
 ## Reminders on Installation
 
 * If you use subdomain or different domain in one `FireLibrary` installation, you will need to register and install on each domain(subdomain).
 
-
-
-# Domain & Multisite
+## Domain & Multisite
 
 * Sometimes, you need to run multiple websites( or domains ) in one `Firebase Firestore`.
  For instance, you run a franchise business and you want to give a website for each branch.
- 
+
  By default, `FireLibrary` gets the site domain and uses that domain's realm in `Firestore`.
- 
+
  For instance, When a visitor access with `www.abc.com`,
  the domain `abc.com` will be automatically used like `fire-library/abc.com/...`.
 
  You can change this behaviour on `settings.ts`.
-
 
 * For Mobile App, since it has no domain, you need to hard code on `settings.ts`.
  Mobile App also needs different name.
@@ -299,53 +274,47 @@ Copy the source code of [regitration page on sample](https://github.com/thruthes
 ## Multiple Domain but Single Database
 
 * you don't have to separate data by each domain.
- * Just fix `domain` variable in `settings.ts` with 'database'.
+  * Just fix `domain` variable in `settings.ts` with 'database'.
    And all data of all domain will be saved under `/fire-library/database/...`.
-   
 
-
-
-
-# Push Notification
+## Push Notification
 
 * There is `Push` class in `push.ts` and stopped working because we believe capacitor will provide a different way of push notification than `Firebase messaging`.
 
-
 * Strategies for getting `token`.
- * Once a user rejects the consent box of permissing push notifiation, there is no way to show the consent box again.
+  * Once a user rejects the consent box of permissing push notifiation, there is no way to show the consent box again.
   Unless you change the domain.
   You can change domain by adding/removing `www` in front of the domain or `.` at the end of domain.
- * One user with many devices can have many tokens
+  * One user with many devices can have many tokens
    So, you need to save tokens as an array of user document.
    `/fire-library/{domain}/push-notifications/{uid}/Array<{ token-id: time }>`
 
- * Show a button with nice explanation why you need to enable/accept push notification.
+  * Show a button with nice explanation why you need to enable/accept push notification.
 
+## Security Rules
 
-# Security Rules
+### Firestore
 
-## Firestore
-
-````
+```` javascript
 service cloud.firestore {
   match /databases/{database}/documents {
-  
+
     function isLogin() {
-    	return request.auth != null;
+      return request.auth != null;
     }
     function isMyDocument() {
-    	return resource.data.uid == request.auth.uid
+      return resource.data.uid == request.auth.uid
     }
     function isDomainAdmin(domain) {
       return isLogin()
         && get(/databases/$(database)/documents/fire-library/$(domain)/settings/admin).data.email == request.auth.token.email;
     }
-    
+
     function domainPostLikeCreateValidator(domain, post, col) {
-    	return isLogin()
-      	&& !exists(/databases/$(database)/documents/fire-library/$(domain)/posts/$(post)/$(col)/$(request.auth.uid));
+      return isLogin()
+        && !exists(/databases/$(database)/documents/fire-library/$(domain)/posts/$(post)/$(col)/$(request.auth.uid));
     }
-    
+
     function domainPostLikeDeleteValidator(domain, post, col) {
     	return isLogin()
       	&& exists(/databases/$(database)/documents/fire-library/$(domain)/posts/$(post)/$(col)/$(request.auth.uid));
@@ -463,10 +432,9 @@ service cloud.firestore {
 }
 ````
 
-
 ## Storage
 
-````
+```` javascript
 service firebase.storage {
   match /b/{bucket}/o {
 		// Only an individual user can write to "their" images
@@ -478,49 +446,42 @@ service firebase.storage {
 }
 ````
 
-
-
-
-# Documents
+## Documents
 
 * We use compodoc to generator documents based on Javascript comments.
 * Github - https://github.com/thruthesky/firelibrary
 * Npm - https://www.npmjs.com/package/firelibrary
 * Webiste - www.firelibrary.net
 
-
-
-# For developers - Programming Tips.
+## For developers - Programming Tips.
 
 * Use site domain as firelibrary domain.
- * If your domain is 'abc.com', use `/firelibrary/abc.com/...` as your database.
+  * If your domain is 'abc.com', use `/firelibrary/abc.com/...` as your database.
 * To upload image, show images locally on the form. in that way, you do not need to download the uploaded images to show it on form.
 
-
-
-
-## Testing with Karma & Jasmine.
+### Testing with Karma & Jasmine
 
 * Well, We decided not to use Karma & Jasmine for unit testing.
- * If you want to pursue using Karma & Jasmine, we have samples on how to do it with Karma & Jasmine.
+  * If you want to pursue using Karma & Jasmine, we have samples on how to do it with Karma & Jasmine.
  See `providers/fire.service.spect.ts` and `providers/category/category.spect.ts` for sample test codes.
- * Run `npm run test` and you will see the results.
+  * Run `npm run test` and you will see the results.
 
-## Response of FireLibrary. How to handle the return.
+### Response of FireLibrary. How to handle the return.
 
 * `Action Methods` must return a Promise of `Base::success()` or `Base::failure()`.
- * The returns of `Base::sucess()` and `Base::failure()` are compatible with `RESPONSE` object.
+  * The returns of `Base::sucess()` and `Base::failure()` are compatible with `RESPONSE` object.
 
 * If there is no error, then `.then( (re: RESPONSE) => { ... })` would be followed by `Action Methods` call.
 
 * If there is error, then `.catch( (re: RESPONSE) => { ... })` would be followed by `Action Methods` call.
 
+### How to handle errors
 
-## How to handle errors.
 * `e.code` is a string of error code.
 * `e.message` should be translated already and ready to be used with alert();
 * you can `console.error(e)` to view the call stack.
-````
+
+```` typescript
   category() {
     this.fire.category.create(<any>{})
       .then(re => {
@@ -534,9 +495,7 @@ service firebase.storage {
   }
 ````
 
-
-
-## Language Translation
+### Language Translation
 
 * @since 2018-04-07. No default 'en.ts' or No default language is chosen. It's much simpler now.
 * Language files are loaded from `assets/lang` folder by default. For instance, `assets/lang/ko.json`, `assets/lang/jp.json`.
@@ -602,19 +561,17 @@ this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['relo
 
 * Example of language file. `firelibrary/etc/languages/en.json`
 
-
-
-## Validators
+### Validators
 
 Please follow the rules below when you are going to write a validators.
 
 * validator must have a prefix of the method name it is needed for and postfix of 'Validator'
- * For instance, you need to write a validator for `create` method and the method name of the validator
+  * For instance, you need to write a validator for `create` method and the method name of the validator
    would be `createValidator`
 * put validator right on top of the caller method.
 * must return a Promise. Or it can be `async/wait` method to be chained like below.
 
-````
+```` typescript
 return this.createValidator(category)
     .then(() => {
         return this.collection.doc(category.id).set(_.sanitize(category));
@@ -624,38 +581,34 @@ return this.createValidator(category)
 ````
 
 * since all validator returns a `Promise`
- * they are `thenable` and `catchable`.
-   * If there is no error, then simply returns null.
-   * If there is error on validating, it should return the result of ` failure() `.
+  * they are `thenable` and `catchable`.
+    * If there is no error, then simply returns null.
+    * If there is error on validating, it should return the result of ` failure() `.
 
-## Sanitizers
+### Sanitizers
 
 When there are things to sanitize, it is one good idea to make a separate method for easy structuring.
 
 * All sanitizer must have a prefix of the method name and post fix of `Sanitizer`.
- * For instance, you will write a sinitizer for `create` method, then the name of the sanitizer would be `createSaninitizer`.
+  * For instance, you will write a sinitizer for `create` method, then the name of the sanitizer would be `createSaninitizer`.
 * Sanitizer must return the sanitized value even if the data was passed by `reference`.
 
+### POST
 
-
-## POST
-
-### Realtime update
+#### Realtime update
 
 * If the posts/comments are updated in realtime, you can build a forum with chatting fuctionality.
  Normally chatting functinality has a realtime update with the messages of other users chat.
- * When you have a QnA forum and person A asks something on the forum.
- * Person B replies on it.
- * the person A gets `push-notification` with the reply on his question.
- * the person A opens the forum and may comments on the reply of person B.
- * Person B gets `push-notification` and opens the qna post.
- * Person B replies again
- * And the chatting fuctionality begins since the comments are updated in realtime and the forum post page may really look like a chat room depending on the desing.
- * It is still a forum. You can open the chat to public simple as a forum posts/comments.
+  * When you have a QnA forum and person A asks something on the forum.
+  * Person B replies on it.
+  * the person A gets `push-notification` with the reply on his question.
+  * the person A opens the forum and may comments on the reply of person B.
+  * Person B gets `push-notification` and opens the qna post.
+  * Person B replies again
+  * And the chatting fuctionality begins since the comments are updated in realtime and the forum post page may really look like a chat room depending on the desing.
+  * It is still a forum. You can open the chat to public simple as a forum posts/comments.
 
-
-
-### No post delete.
+#### No post delete
 
 * When user clicks on delete button to delete the post, firelibrary does not actually delete the post.
   Instead, it marks as deleted.
