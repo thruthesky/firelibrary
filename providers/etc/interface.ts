@@ -18,6 +18,7 @@ export interface FIRESERVICE_SETTINGS {
     listenOnCommentChange?: boolean;
     listenOnPostLikes?: boolean;
     listenOnCommentLikes?: boolean;
+    date?: 'Locale' | 'LocaleDate' | 'LocaleTime' | 'Date' | 'Time' | 'TodayTimeOtherdayDate';
 }
 
 

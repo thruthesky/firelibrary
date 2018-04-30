@@ -523,6 +523,7 @@ this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['relo
 {{ fire.t('KEY', {info: 'extra'}) }}  <!-- Alias of translate() -->
 {{ fire.ln.HOME }}  <!-- This access a variable. NOT method call. Prefered for speed. -->
 {{ 'HOME' | t }} <!-- PIPE -->
+{{ post.created ? ('QNA_FORM_EDIT_TITLE' | t) : ('QNA_FORM_CREATE_TITLE' | t) }} <!-- complicated expression -->
 ````
 
 * Realtime update when changing language or loading a language on bootstrap.
@@ -625,6 +626,28 @@ When there are things to sanitize, it is one good idea to make a separate method
 
 ````
 
+### Observation For Post Change
+
+When it display post data into template, the pre-processed data like below, vanishes/disappears.
+
+```` typescript
+this.fire.post.page({ category: category, limit: 5 }).then(posts => {
+  ... changes here disappears ...
+  ... like posts[0].content += ' ... copyright '; // this disappears.
+})
+````
+
+* This is because `listenOnPostChange` option.
+  This option, when it is set to true, observes for the changes of the post.
+  When the post chagnes, it reflects to the view.
+  But there is a side effect that even there is no changes, it once download the data from the server and applies to the view.
+  So, the changes you have made in `fire.post.page().then( posts => {} )` will be overwritten by the code of `subscribePostChange` which simply replace your post data with the post data from database.
+  That's why it looks like it is being overwritten.
+  In this case, the best way to overcome this problem is
+  1. Not to use `listenOnPostChagne` option
+  2. Do updates on template.
+
+
 ### New Comment subscription
 
 ```` typescript
@@ -698,12 +721,6 @@ And with that admin account, you can do admin things.
   * Just get email/password and register.
   * After that move to 'profile page' to update his profile.
 
-## Known Problem. Bugs. Issues.
+## Known Problem. Bugs. Issues
 
-* When we try to edit posts data in `then` callback after loading a page, the changes are rollback to the original data.
-
-```` typescript
-this.fire.post.page({ category: category, limit: 5 }).then(posts => { ... changes here disappears ... })
-````
-
-So we did it on template.
+* @see ###Observation For Post Change for a common pitfall.

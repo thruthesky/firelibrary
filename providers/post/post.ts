@@ -115,7 +115,7 @@ export class Post extends Base {
     private createSanitizer(post: POST) {
         _.sanitize(post);
         post.uid = this.user.uid;
-        if ( ! post.displayName ) {
+        if (!post.displayName) {
             post.displayName = this.user.displayName;
         }
         post.created = firebase.firestore.FieldValue.serverTimestamp();
@@ -184,6 +184,17 @@ export class Post extends Base {
 
         return Promise.resolve(null);
     }
+    private editSanitizer(post: POST) {
+        _.sanitize(post);
+        /**
+         * Remove `date` since it shoudn't be saved on database.
+         */
+        if (post.date !== void 0) {
+            post.date = null;
+        }
+        return post;
+    }
+
     /**
      * Pushes new `post` in an existing `document` and adds `updated` field.
      *
@@ -204,11 +215,12 @@ export class Post extends Base {
     edit(post: POST): Promise<POST_EDIT> {
         return <any>this.editValidator(post)
             .then(() => {
-                _.sanitize(post);
+                this.editSanitizer(post);
                 post.updated = firebase.firestore.FieldValue.serverTimestamp();
                 const ref = this.collection.doc(post.id);
                 // console.log('update at: ', ref.path);
                 // console.log('update post: ', post.id);
+                // console.log('edit: ', post);
                 return ref.update(post);
             })
             .then(() => {
@@ -236,8 +248,8 @@ export class Post extends Base {
             deleted: true
         };
         return this.collection.doc(id).update(post)
-            .then(() => this.success({id: id}))
-            .catch( e => this.failure(e));
+            .then(() => this.success({ id: id }))
+            .catch(e => this.failure(e));
     }
 
 
@@ -306,6 +318,13 @@ export class Post extends Base {
         }
     }
 
+    /**
+     * It listens the post for changes.
+     *
+     * @see README ### Post Change Observation
+     *
+     * @param post post to observe for changes.
+     */
     private subscribePostChange(post: POST) {
 
         if (!this.settings.listenOnPostChange) {
@@ -399,12 +418,35 @@ export class Post extends Base {
 
         return <any>query.get().then(querySnapshot => {
             if (querySnapshot.docs.length) {
+                console.log('==> step querySnapshot');
                 querySnapshot.forEach(doc => {
                     const post: POST = <any>doc.data();
                     post.id = doc.id;
-                    post['date'] = (new Date(post.created)).toLocaleString();
+                    const d = new Date(post.created);
+                    switch (this.settings.date) {
+                        case 'Date': post['date'] = d.toDateString(); break;
+                        case 'Time': post['date'] = d.toTimeString(); break;
+                        case 'Locale': post['date'] = d.toLocaleString(); break;
+                        case 'LocaleDate': post['date'] = d.toLocaleDateString(); break;
+                        case 'LocaleTime': post['date'] = d.toLocaleTimeString(); break;
+                        case 'TodayTimeOtherdayDate':
+                            const t = new Date();
+                            if (d.getFullYear() === t.getFullYear() && d.getMonth() === t.getMonth() && d.getDate() === t.getDate()) {
+                                // console.log('today');
+                                post['date'] = d.toLocaleTimeString();
+                            } else {
+                                post['date'] = d.toLocaleDateString();
+                            }
+                            break;
+                        default: post['date'] = d.toLocaleString();
+                    }
                     this.pagePosts[post.id] = post;
                     this.pagePostIds.push(post.id);
+                    // console.log('page post: ', post);
+                    /**
+                     * It fires `chage` event immediately. It is important to note.
+                     * @see README ### Post Change Observation
+                     */
                     this.subscribePostChange(post);
                     this.subscribeLikes(post);
                 });
@@ -417,6 +459,7 @@ export class Post extends Base {
                     this.subscribePostAdd(query);
                 }
                 return this.pagePosts;
+
             } else {
                 return [];
             }
@@ -432,6 +475,7 @@ export class Post extends Base {
     *  In this way, it prevents double display of the last post.
     */
     private subscribePostAdd(query: firebase.firestore.Query) {
+        // console.log('subscribePostAdd()');
         if (!this.settings.listenOnPostChange) {
             return;
         }
@@ -447,7 +491,7 @@ export class Post extends Base {
 
                 } else {
                     // console.log('pending', doc.metadata.hasPendingWrites, 'type: ', change.type,
-                        // 'from cache: ', doc.metadata.fromCache, doc.data());
+                    // 'from cache: ', doc.metadata.fromCache, doc.data());
                     const post: POST = doc.data();
                     post.id = doc.id;
                     // console.log(`exists: ${this.pagePosts[post.id]}`);

@@ -140,7 +140,7 @@ export class Library {
             }
         }
 
-        /** Remove `password` not to save on documents. */
+        /** Remove `password`. It should not  be saved on documents. */
         if (obj && obj['password'] !== void 0) {
             delete obj['password'];
         }

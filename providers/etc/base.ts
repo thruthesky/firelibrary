@@ -126,9 +126,16 @@ export class Base {
     get collectionDomain() {
         return Base.collectionDomain;
     }
-    setSettings(obj: FIRESERVICE_SETTINGS) {
-        if (obj) {
-            Base.settings = Object.assign(Base.settings, obj);
+    /**
+     * Set settings of fire library.
+     *
+     * You can set/change the settings at any time of the app life cycle.
+     *
+     * @param settings settings for fire library
+     */
+    setSettings(settings: FIRESERVICE_SETTINGS) {
+        if (settings) {
+            Base.settings = Object.assign(Base.settings, settings);
         }
     }
 
