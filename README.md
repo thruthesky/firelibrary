@@ -204,9 +204,9 @@ $ firebase deploy
 ## Examples
 
 * We have a good example of forum theme. @see
-  * [Site forum page](https://github.com/thruthesky/site/tree/44f2819c6ab33e0669843a392adb9b3e38bf3aec/src/app/pages/forum)
-  * [Site comment component](https://github.com/thruthesky/site/tree/44f2819c6ab33e0669843a392adb9b3e38bf3aec/src/app/components/comment)
-  * and [Site data component](https://github.com/thruthesky/site/tree/44f2819c6ab33e0669843a392adb9b3e38bf3aec/src/app/components/data)
+  * [Site forum page](https://github.com/thruthesky/site/tree/57de3f703b1e0d59e88b96d0a5ff077647f8646d/src/app/pages/forum)
+  * [Site comment component](https://github.com/thruthesky/site/tree/57de3f703b1e0d59e88b96d0a5ff077647f8646d/src/app/components/comment)
+  * and [Site data component](https://github.com/thruthesky/site/tree/57de3f703b1e0d59e88b96d0a5ff077647f8646d/src/app/components/data)
 
 ## Default Code
 
