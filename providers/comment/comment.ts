@@ -204,12 +204,17 @@ export class Comment extends Base {
         /**
          * @fix 2018-04-28. the parameter `comment.displayName` may has value already.
          */
-        if ( ! comment.displayName ) {
+        if (!comment.displayName) {
             comment.displayName = this.user.displayName;
         }
         comment.created = firebase.firestore.FieldValue.serverTimestamp();
         if (comment.parentId) {
-            comment.depth = this.getComment(comment.parentId).depth + 1;
+            let parentDepth = this.getComment(comment.parentId).depth;
+            console.log('parentDepth: ', parentDepth);
+            if (!parentDepth) {
+                parentDepth = 0;
+            }
+            comment.depth = parentDepth + 1;
         } else {
             comment.depth = 0;
         }
@@ -295,8 +300,8 @@ export class Comment extends Base {
         const unsubscribe = this.commentCollection(postId).doc(comment.id).onSnapshot(doc => {
             comment = Object.assign(comment, doc.data());
             // console.log('comment chagne: ', comment);
-            if ( this.settings.onCommentChange ) {
-                this.settings.onCommentChange( comment );
+            if (this.settings.onCommentChange) {
+                this.settings.onCommentChange(comment);
             }
         });
         this.pushCommentChangeSubscriber(postId, unsubscribe);

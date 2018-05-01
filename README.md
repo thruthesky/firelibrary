@@ -697,9 +697,20 @@ The right way to sanitize post is below.
     });
 ````
 
+### Existing forum ( post list ) page with erasing/destroying all the post list information
 
+When the user leaves the forum or chagnes the category or even revisits the category, it needs to reset the post service object that previoiusly loaded.
+
+You can do it on 'ngOnDestory()' like below.
+
+```` typescript
+    ngOnDestroy() {
+        this.fire.post.stopLoadPage();
+    }
+````
 
 ## Installation
+
 With the condition below, you can do installation.
 
 * If `/settings/installed` document exists, it is considered to be installed already.

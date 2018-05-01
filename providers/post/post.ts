@@ -561,9 +561,14 @@ export class Post extends Base {
     /**
      * Exits the page nicely by unsubscribing to `Post` and `Likes`
      *
+     * Call this method on 'ngOnDestroy()' of the forum list when you want to erase/destroy previously loaded post-list information.
+     *
      */
     stopLoadPage(): void {
-        this.resetLoadPage(undefined);
+        /**
+         * @fix it must be 'all' to destroy all the information of the post.
+         */
+        this.resetLoadPage('all');
         this.unsubscribeLikes();
         this.unsubscribePosts();
     }
