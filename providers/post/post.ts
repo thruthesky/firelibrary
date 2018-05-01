@@ -335,6 +335,9 @@ export class Post extends Base {
         const unsubscribe = this.post(post.id).onSnapshot(doc => {
             // console.log('Update on :', path, doc.data());
             post = Object.assign(post, doc.data());
+            if ( this.settings.onPostChange ) {
+                this.settings.onPostChange( post );
+            }
         });
         this._unsubscribePosts.push(unsubscribe);
     }

@@ -626,7 +626,7 @@ When there are things to sanitize, it is one good idea to make a separate method
 
 ````
 
-### Observation For Post Change
+### Sanitizing and Observation For Post/Comment Changes
 
 When it display post data into template, the pre-processed data like below, vanishes/disappears.
 
@@ -644,9 +644,46 @@ this.fire.post.page({ category: category, limit: 5 }).then(posts => {
   So, the changes you have made in `fire.post.page().then( posts => {} )` will be overwritten by the code of `subscribePostChange` which simply replace your post data with the post data from database.
   That's why it looks like it is being overwritten.
   In this case, the best way to overcome this problem is
-  1. Not to use `listenOnPostChagne` option
+  1. Not to use `listenOnPostChagne` option. It is a recommended way. Most of website/community don't need to observe post chagnes. It is just like an extra functionality.
   2. Do updates on template.
+  3. Use `sanitizePost` callback.
 
+* This concept goes to Comment Changes option also.
+  Below is an example of how to sanitizing comemnt before it shows into view.
+
+```` typescript
+  this.fire.setSettings({
+      onCommentChange: comment => this.sanitizeComment(comment)
+  });
+  sanitizeComment(comment: COMMENT) {
+      comment.content += '<hr> Comment Copyright(C)';
+  }
+  this.fire.comment.load(this.post.id).then(commentIds => {
+      if ( commentIds && commentIds.length ) {
+          commentIds.forEach( id => this.sanitizeComment( this.fire.comment.getComment( id ) ) );
+      }
+  }
+````
+
+
+### sanitizePost to sanitize post before showing into template
+
+There might be many places to sanitize post data before showing it into view. For instance, when it
+
+* loads posts of a page
+* detects post changes
+
+The right way to sanitize post is below.
+
+```` typescript
+  fire.setSettings({
+      onPostChange: post => this.sanitizePost(post)
+  });
+  this.fire.post.page({ category: category, limit: 5 }).then(posts => this.sanitizePost( posts[0] ));
+  sanitizePost(post: POST) {
+      post.content += '<hr> Copyright (C) 2018';
+  }
+````
 
 ### New Comment subscription
 

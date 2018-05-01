@@ -70,7 +70,7 @@ export class Comment extends Base {
     /**
      * Returns parent comment.
      */
-    getParentComment(commentId): COMMENT {
+    getParentComment(commentId: string): COMMENT {
         if (commentId) {
             const comment = this.getComment(commentId);
             if (comment.parentId) {
@@ -87,7 +87,7 @@ export class Comment extends Base {
      * @param commentId comment document id.
      * @returns a comment document object.
      */
-    getComment(commentId): COMMENT {
+    getComment(commentId: string): COMMENT {
         if (this.comments[commentId] === void 0) {
             return <any>[];
         }
@@ -294,6 +294,10 @@ export class Comment extends Base {
         }
         const unsubscribe = this.commentCollection(postId).doc(comment.id).onSnapshot(doc => {
             comment = Object.assign(comment, doc.data());
+            // console.log('comment chagne: ', comment);
+            if ( this.settings.onCommentChange ) {
+                this.settings.onCommentChange( comment );
+            }
         });
         this.pushCommentChangeSubscriber(postId, unsubscribe);
     }
