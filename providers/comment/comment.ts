@@ -54,6 +54,21 @@ export class Comment extends Base {
         this.user = new User();
     }
 
+    /**
+     * Erase previously loaded comment data.
+     *
+     * When the category or forum revisited, it adds same comments again. so, it will remove previously loaded comments.
+     *
+     * @param postId Post document ID
+     */
+    reset(postId: string): void {
+        if ( this.comments[postId] !== void 0 ) {
+            delete this.comments[postId];
+        }
+        if ( this.commentIds[postId] !== void 0 ) {
+            delete this.commentIds[postId];
+        }
+    }
 
     /**
      * Returns a temporary comment document id to create.
@@ -117,6 +132,7 @@ export class Comment extends Base {
      */
     load(postId: string): Promise<Array<string>> {
         const ref = this.commentCollection(postId);
+        this.reset(postId);
         // console.log(`gets at: ${ref.path}`);
         return ref.orderBy('created', 'asc').get().then(s => {
             s.forEach(doc => {
@@ -178,7 +194,7 @@ export class Comment extends Base {
             this.commentIds[postId] = [];
         }
         const pos = this.commentIds[postId].findIndex(id => id === comment.parentId);
-        // console.log('pos: ', pos);
+        console.log('pos: ', pos);
         if (pos === - 1) {
             this.commentIds[postId].push(comment.id);
         } else {
