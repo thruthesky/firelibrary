@@ -208,6 +208,10 @@ $ firebase deploy
   * [Site comment component](https://github.com/thruthesky/site/tree/57de3f703b1e0d59e88b96d0a5ff077647f8646d/src/app/components/comment)
   * and [Site data component](https://github.com/thruthesky/site/tree/57de3f703b1e0d59e88b96d0a5ff077647f8646d/src/app/components/data)
 
+* Example. Reply is forbidden except admin only.
+  * [Site repository](https://github.com/thruthesky/site/tree/d589772cc52bd175e8c5a52edfb95cb80b8d28d3)
+
+
 ## Default Code
 
 ### Importing FireLibrary
