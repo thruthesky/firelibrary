@@ -145,37 +145,34 @@
     * `Registration` Page.
     * `Installation` Page.
 
-## Installation
-
-
 ## FireLibrary Installation
 
 * Installed `FireLibrary` as submodule at `src/app/modules/firelibrary` like below.
-````
-$ git submodule add https://github.com/thruthesky/firelibrary src/app/modules/firelibrary
+
+```` bash
+git submodule add https://github.com/thruthesky/firelibrary src/app/modules/firelibrary
 ````
 
 * Install firebase module
+
 ````
 $ npm i firebase
 ````
 
 * Setup Firebase Project on Firebase Console/Dashboard.
- * Open/create a firebase project in firebase dashboard.
- * Add security rules for `Firestore` and `Storage`. @see #Security Rules.
- * Enable Email/Password Authentication.
-  * You can allow loggin by google/facebook also. but you need to code by yourself.
+  * Open/create a firebase project in firebase dashboard.
+  * Add security rules for `Firestore` and `Storage`. @see #Security Rules.
+  * Enable Email/Password Authentication.
+    * You can allow loggin by google/facebook also. but you need to code by yourself.
 
-
-## Firebase Functions Installation.
+## Firebase Functions Installation
 
 * `firelibrary` comes with `firelibrary-functions` which provides for backend work. You can still use `firelibrary` without `firelibrary-functions` but it is better to have functions.
 
 
 If you are going to use `firelibrary-functions`, you will need to change `like/dislikes` security rules. You need to remove the rules for it or block it. since it is done in the functions with admin previlegdes.
 
-
-````
+```` sh
 $ mkdir functions
 $ cd functions/
 $ mkdir site
@@ -185,7 +182,6 @@ $ cd firelibrary-functions/
 $ cd functions
 $ npm i
 $ cd ..
-
 
 ; ---------------------------------------- Firebase Project ID
 ; 1) Open .firebaserc
@@ -210,7 +206,6 @@ $ firebase deploy
 
 * Example. Reply is forbidden except admin only.
   * [Site repository](https://github.com/thruthesky/site/tree/d589772cc52bd175e8c5a52edfb95cb80b8d28d3)
-
 
 ## Default Code
 
@@ -540,12 +535,11 @@ this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['relo
     * use `fire.ln.[CODE]` for texts that is not being re-redraw like 'header', 'footer', or anyting outside `<router-outlet>`.
     * And make a separate page for language change and if user changes language,
       wait for it loads that langauage( it's a promise call and you can wait ),
-      and move to another page or 
+      and move to another page or
 
   * You will need to use either `fire.t()` or `fire.ln.[CODE]` to avail the language text immediately after (asynchronously) loading.
   * If you are going to use `fire.t()`, the template will redraw it endlessly.
     So, it is better to use `fire.ln.[CODE]` unless you have information to add into the text.
-
 
 {{ 'Help' | t }}
 {{ a.fire.getText('help') | json }}
@@ -553,14 +547,13 @@ this.fire.setLanguage( ln, '/assets/lang/' + ln + '.json?reloadTag=' + env['relo
 * If you are going to use the language file immediately before loading the language file, English language may be used in stead.
 
 * Error code should be defined in language file so it can be translated to end users in their languages.
- * if there is any error that is not translated, you will see a message like `"Error code - not-found - is not translated. Please translate it. It may be firebase error."`.
+  * if there is any error that is not translated, you will see a message like `"Error code - not-found - is not translated. Please translate it. It may be firebase error."`.
 
 * You can add information to display with message. @see `Base::translate()`
 
 * You can add language text dynamically. @see `test.component::language()` to know how to add more language(code/text) dynamically.
 
 * You can load a language file outsite by giving URL. @see `test.component::language()` to know more about it.
-
 
 * If the language is already loaded, it does not load again.
 
@@ -588,7 +581,7 @@ return this.createValidator(category)
 * since all validator returns a `Promise`
   * they are `thenable` and `catchable`.
     * If there is no error, then simply returns null.
-    * If there is error on validating, it should return the result of ` failure() `.
+    * If there is error on validating, it should return the result of `failure()`.
 
 ### Sanitizers
 
@@ -732,14 +725,9 @@ With the condition below, you can do installation.
 
 And with that admin account, you can do admin things.
 
-
-
-
 ### Example
 
 * @see `firelibrary-app`'s install.component ts/html
-
-
 
 ### Case study
 
@@ -747,17 +735,17 @@ And with that admin account, you can do admin things.
   then you may need to install.
   You will only need to set `/settings/installed`. If you are going to set admin email when it is already exists, you get permission error on installation.
 
-## File Upload & Thumbnail.
+## File Upload & Thumbnail
 
 * @see ## Registration Page for profile photo upload
 
 * Uploaded files are saved on storage.
- * for files - `fire-library/{domain}/{user-uid}/{post-document-id}/{files}`.
- * for comments - `fire-library/{domain}/{user-uid}/{post-document-id}/comments/{comment-document-id}/{files}`.
+  * for files - `fire-library/{domain}/{user-uid}/{post-document-id}/{files}`.
+  * for comments - `fire-library/{domain}/{user-uid}/{post-document-id}/comments/{comment-document-id}/{files}`.
 
 * When uploaded files are saved, thumbnails are generated and their paths are saved on
- * for files - `temp/storage/thumbnails/fire-library/{domain}/{user-uid}/{post-document-id}/{file}/{created: time}`
- * for comments - `temp/storage/thumbnails/fire-library/{domain}/{user-uid}/{post-document-id}/comments/{comment-document-id}/{file}/{created: time}`.
+  * for files - `temp/storage/thumbnails/fire-library/{domain}/{user-uid}/{post-document-id}/{file}/{created: time}`
+  * for comments - `temp/storage/thumbnails/fire-library/{domain}/{user-uid}/{post-document-id}/comments/{comment-document-id}/{file}/{created: time}`.
 
 ## Registration Page
 
@@ -776,3 +764,14 @@ And with that admin account, you can do admin things.
 ## Known Problem. Bugs. Issues
 
 * @see ###Observation For Post Change for a common pitfall.
+
+## Tips and Tricks
+
+* When you create a post, there are many rules.
+  * One of the rule is that the category of the forum must exists.
+  And you can create the category manually in the firebase console.
+  Simply create a document under `category` collection. The document ID of the category must be the same name of the category and you need a property of `id` with the category name.
+
+```` json
+/fire-library/database/categories/reminder/{ id: reminder }
+````
