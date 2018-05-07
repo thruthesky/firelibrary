@@ -126,7 +126,7 @@
   * Users who have chatted in that post(chat room), will automatically have subscription and get notification immediately when other user chats.
    They have unsubscribe options.
   * Other users ( who are not chatting ) can subscribe/unsubscribe that post for updating new chat. and get immediate notifications. ( delaying push notificatio delivery is not an easy work. no good for function and cron. )
- 
+
 * When a post is older than `liveChatTimeout`,
   then `live chat` stops. and the design of the post become a normal post view unless the author set `liveChatExpires` to until when the `live chat` continues. it's a date/time.
   * by default it may be `undefined`.
@@ -155,8 +155,8 @@ git submodule add https://github.com/thruthesky/firelibrary src/app/modules/fire
 
 * Install firebase module
 
-````
-$ npm i firebase
+```` sh
+npm i firebase
 ````
 
 * Setup Firebase Project on Firebase Console/Dashboard.
@@ -168,7 +168,6 @@ $ npm i firebase
 ## Firebase Functions Installation
 
 * `firelibrary` comes with `firelibrary-functions` which provides for backend work. You can still use `firelibrary` without `firelibrary-functions` but it is better to have functions.
-
 
 If you are going to use `firelibrary-functions`, you will need to change `like/dislikes` security rules. You need to remove the rules for it or block it. since it is done in the functions with admin previlegdes.
 
@@ -716,7 +715,6 @@ With the condition below, you can do installation.
  Meaning once it is set, it is no longer creatable.
  It can be edited once it is set and if the user logged in as admin email. Other users cannot edit `/settings/admin`.
  Admin can install again. But others cannot.
-
 
 1. check if `/settings/installed` exists. If yes, it is installed already.
 2. if not, set `/settings/admin.email` with your email.
